@@ -1,6 +1,24 @@
 #!/bin/sh
 set -e
+
+# /etc/os-release is normally a link to /usr/lib/os-release, which this
+# package provides. Debian live images (live-build) replace it with a copy
+# made before Xenon is installed, plus IMAGE_ID/BUILD_ID lines; refresh
+# that copy so GNOME and other programs see Xenon, keeping those lines.
+sync_etc_os_release() {
+    [ -f /usr/lib/os-release ] || return 0
+    if [ ! -e /etc/os-release ] && [ ! -L /etc/os-release ]; then
+        ln -s ../usr/lib/os-release /etc/os-release
+        return 0
+    fi
+    [ -L /etc/os-release ] && return 0
+    extra=$(grep -E '^(IMAGE_ID|BUILD_ID)=' /etc/os-release || true)
+    { cat /usr/lib/os-release; [ -z "$extra" ] || echo "$extra"; } > /etc/os-release.new
+    mv /etc/os-release.new /etc/os-release
+}
+
 if [ "$1" = "configure" ]; then
+    sync_etc_os_release
     if command -v plymouth-set-default-theme >/dev/null 2>&1; then
         plymouth-set-default-theme xenon || true
     fi

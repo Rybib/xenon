@@ -3,8 +3,13 @@ set -e
 if [ "$1" = "remove" ] || [ "$1" = "abort-install" ] || [ "$1" = "disappear" ]; then
     dpkg-divert --package xenon-branding --remove --rename \
         --divert /usr/lib/os-release.debian /usr/lib/os-release
-    dpkg-divert --package xenon-branding --remove --rename \
-        --divert /etc/os-release.debian /etc/os-release
+    # Live images keep a copy of os-release in /etc (see postinst); put
+    # Debian's identity back into it.
+    if [ -f /etc/os-release ] && [ ! -L /etc/os-release ] && [ -f /usr/lib/os-release ]; then
+        extra=$(grep -E '^(IMAGE_ID|BUILD_ID)=' /etc/os-release || true)
+        { cat /usr/lib/os-release; [ -z "$extra" ] || echo "$extra"; } > /etc/os-release.new
+        mv /etc/os-release.new /etc/os-release
+    fi
 fi
 #DEBHELPER#
 exit 0

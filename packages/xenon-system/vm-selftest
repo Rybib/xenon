@@ -7,20 +7,26 @@
 # Checks every layer Xenon adds, including running a Windows program
 # through XWS, and prints a report between markers.
 set -u
-OUT=/dev/ttyS0
-[ -w "$OUT" ] || OUT=/dev/stdout
-exec > >(tee "$OUT") 2>&1
+# Report lines go to stdout (the journal) and straight to the serial port
+# that tools/test-iso.sh reads. No pipes: an earlier `exec > >(tee ...)`
+# lost its reader at the end of the run and killed the script.
+trap '' PIPE
+TTY=/dev/ttyS0
+say() {
+    echo "$*"
+    if [ -w "$TTY" ]; then echo "$*" > "$TTY" 2>/dev/null || true; fi
+}
 
 pass=0; fail=0; warn=0
-ok()   { echo "  PASS $1"; pass=$((pass + 1)); }
-bad()  { echo "  FAIL $1"; fail=$((fail + 1)); }
-note() { echo "  WARN $1"; warn=$((warn + 1)); }
+ok()   { say "  PASS $1"; pass=$((pass + 1)); }
+bad()  { say "  FAIL $1"; fail=$((fail + 1)); }
+note() { say "  WARN $1"; warn=$((warn + 1)); }
 check() { local name=$1; shift; if "$@" >/dev/null 2>&1; then ok "$name"; else bad "$name"; fi; }
 
-echo "XENON-SELFTEST-BEGIN"
+say "XENON-SELFTEST-BEGIN"
 # shellcheck disable=SC1091
 . /usr/lib/os-release
-echo "  system: $PRETTY_NAME, kernel $(uname -r)"
+say "  system: $PRETTY_NAME, kernel $(uname -r)"
 [[ "$NAME" == "Xenon" ]] && ok "os-release identifies Xenon" || bad "os-release"
 # What GNOME and most programs read:
 grep -qx 'NAME="Xenon"' /etc/os-release && ok "/etc/os-release identifies Xenon" \
@@ -86,8 +92,8 @@ if [ -n "$USER_NAME" ]; then
         else
             bad "Windows program did not run through XWS"
         fi
-        echo "  xws doctor:"
-        as_user xws --no-gui doctor | sed 's/^/    /'
+        say "  xws doctor:"
+        as_user xws --no-gui doctor | while IFS= read -r line; do say "    $line"; done
     else
         bad "Windows environment could not be created"
     fi
@@ -95,7 +101,7 @@ else
     note "no live user found; skipping XWS end-to-end"
 fi
 
-echo "  summary: $pass passed, $fail failed, $warn warnings"
-if [ "$fail" -eq 0 ]; then echo "XENON-SELFTEST-PASS"; else echo "XENON-SELFTEST-FAIL"; fi
+say "  summary: $pass passed, $fail failed, $warn warnings"
+if [ "$fail" -eq 0 ]; then say "XENON-SELFTEST-PASS"; else say "XENON-SELFTEST-FAIL"; fi
 sync
 exit 0

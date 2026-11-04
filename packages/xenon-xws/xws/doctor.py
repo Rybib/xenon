@@ -60,7 +60,8 @@ def run_checks() -> list[Check]:
                                 "/dev/ntsync available: fast, accurate Windows sync"))
         else:
             checks.append(Check("ntsync", "NT synchronization (NTSYNC)", WARN,
-                                "/dev/ntsync exists but is not accessible to you"))
+                                "/dev/ntsync exists but is not accessible to you "
+                            "(access is given to the user logged in at the desktop)"))
     else:
         checks.append(Check("ntsync", "NT synchronization (NTSYNC)", WARN,
                             "kernel module not loaded (sudo modprobe ntsync); games "
@@ -105,7 +106,7 @@ def run_checks() -> list[Check]:
                         OK if runtimes.winetricks_path() else WARN,
                         runtimes.winetricks_path() or "winetricks not found"))
 
-    gm = shutil.which("gamemoderun")
+    gm = config.find_tool("gamemoderun")
     checks.append(Check("gamemode", "GameMode", OK if gm else WARN,
                         "available" if gm else "not installed"))
 

@@ -163,3 +163,13 @@ def wine_tool(name: str) -> str | None:
         if os.access(p, os.X_OK):
             return str(p)
     return None
+
+
+def find_tool(name: str) -> str | None:
+    """Find a helper program; Debian installs some games tools (gamemoderun)
+    in /usr/games, which is not on every PATH (e.g. system services)."""
+    found = shutil.which(name)
+    if found:
+        return found
+    candidate = Path("/usr/games") / name
+    return str(candidate) if os.access(candidate, os.X_OK) else None

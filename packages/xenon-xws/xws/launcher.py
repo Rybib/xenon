@@ -197,8 +197,9 @@ def _finish_plan(target: Path | None, wine_args: list[str], kind: str,
     if plan.game and settings.mangohud:
         env["MANGOHUD"] = "1"
     plan.env = env
-    if plan.game and settings.gamemode and shutil.which("gamemoderun"):
-        plan.wrappers = ["gamemoderun"]
+    gamemoderun = config.find_tool("gamemoderun")
+    if plan.game and settings.gamemode and gamemoderun:
+        plan.wrappers = [gamemoderun]
     return plan
 
 

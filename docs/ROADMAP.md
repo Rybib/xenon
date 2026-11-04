@@ -8,7 +8,7 @@
 - [x] Calamares installer: erase/manual/dual boot, LUKS, users, NVIDIA choice, UEFI + BIOS, Secure Boot fallback path
 - [x] Firewall, auto security updates, zram, low-latency audio, controller rules, privacy defaults
 - [x] CI: build the ISO, boot it in QEMU, screenshot, in-VM self-test
-- [ ] **First green ISO build in CI** (needs the GitHub repository)
+- [x] First green ISO build in CI: boots to the desktop, in-VM self-test passes (Linux 7.2, Wine 11.0, NTSYNC, a Windows program runs through XWS)
 - [ ] Installer verified in a VM (UEFI + Secure Boot, BIOS, encrypted)
 - [ ] Booted and installed on real hardware (AMD and NVIDIA)
 

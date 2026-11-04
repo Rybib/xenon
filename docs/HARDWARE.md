@@ -9,7 +9,7 @@ Add a row when you test a machine (`xws doctor` output helps).
 
 | Machine / part | Xenon version | GPU | Works | Issues |
 |---|---|---|---|---|
-| QEMU/KVM (virtio-gpu, CI) | 0.1 | virtio (llvmpipe) | Pending first CI ISO run | No GPU acceleration in CI (expected) |
+| QEMU/KVM (virtio-gpu, CI) | 0.1 | virtio (llvmpipe) | Boots to desktop; self-test 19/19 incl. a Windows program via XWS | No GPU acceleration in CI (expected) |
 
 ## Expected to work out of the box
 

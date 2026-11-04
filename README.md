@@ -14,6 +14,7 @@ music, edit photos and play games, without ads, tracking or bloat. Windows
 programs are a built-in part of the system. Download an installer, open it,
 and the app shows up in your app grid like any other.
 
+<p align="center"><img src="docs/images/live-desktop.png" width="90%" alt="The Xenon live desktop"></p>
 <p align="center">
   <img src="docs/images/settings-apps.png" width="49%" alt="Xenon Settings: installed Windows apps">
   <img src="docs/images/settings-compat.png" width="49%" alt="Xenon Settings: Windows compatibility">
@@ -36,7 +37,7 @@ and the app shows up in your app grid like any other.
 
 ## Status
 
-Xenon is at **0.1 (Phase 1 + Phase 2 foundations)**. Being straight about
+Xenon is at **0.1 (Phase 1 + Phase 2 foundations)**. Download the latest ISO from the newest green [ISO workflow run](https://github.com/Rybib/xenon/actions/workflows/iso.yml) (Artifacts → xenon-iso, needs a GitHub login; kept 14 days). Being straight about
 what has been verified and what hasn't:
 
 | Area | State |
@@ -44,7 +45,8 @@ what has been verified and what hasn't:
 | Windows Subsystem (`xws`) | **Tested end-to-end against real Wine in CI**: environment setup, DXVK deployment, 32-bit programs, running an installer, app grid entry, launching from the entry, installed-apps list, uninstall and cleanup (`packages/xenon-xws/tests/e2e.sh`) |
 | Xenon Settings / Welcome | Runs and renders (screenshots in `docs/images/`); privileged actions (firewall, NVIDIA install) need a real install to verify |
 | Debian packages | Build cleanly, with unit tests run during the build |
-| Live ISO + installer | Build and boot test automated in CI (`.github/workflows/iso.yml`). **Not yet booted on real hardware** |
+| Live ISO | **Builds, and boots to the desktop in CI**; the in-VM self-test passes (19 checks, including running a Windows program through XWS inside the ISO). Not yet booted on real hardware |
+| Installer | Configured, **not yet run**: first install test pending (VM, then real hardware) |
 | Priority apps (Adobe, Ableton, Office, Steam, Epic) | Profiles exist but are **untested**; see `docs/TESTING.md` |
 
 Known limits, accepted from day one: games with **kernel-level anti-cheat**

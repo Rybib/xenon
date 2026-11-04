@@ -1,11 +1,13 @@
 # Xenon follows Debian stable, with a newer kernel, graphics stack and
 # NVIDIA driver from Debian's official backports archive (newer GPU and
 # hardware support, NTSYNC). Everything else stays on stable.
-Package: src:linux src:linux-signed-amd64 src:firmware-nonfree src:firmware-free
+# The kernel and the packages that move in lockstep with it.
+Package: src:linux src:linux-signed-amd64 src:linux-base src:initramfs-tools src:firmware-nonfree src:firmware-free src:firmware-sof src:wireless-regdb
 Pin: release n=trixie-backports
 Pin-Priority: 990
 
-Package: src:mesa src:libdrm src:vulkan-loader src:llvm-toolchain-*
+# Mesa and the libraries it is built against.
+Package: src:mesa src:libdrm src:vulkan-loader src:llvm-toolchain-* src:llvm-defaults src:spirv-tools src:spirv-llvm-translator-* src:libclc-* src:directx-headers src:libglvnd src:wayland src:wayland-protocols
 Pin: release n=trixie-backports
 Pin-Priority: 990
 

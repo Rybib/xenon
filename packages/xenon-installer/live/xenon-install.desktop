@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Install Xenon
+Comment=Install Xenon on this computer
+Exec=xenon-install
+Icon=xenon-logo
+Terminal=false
+Categories=System;
+StartupNotify=true

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Windows Program
+Comment=Run Windows programs and installers
+Exec=xws run %f
+Icon=xenon-windows-app
+Terminal=false
+NoDisplay=true
+StartupNotify=true
+Categories=System;
+MimeType=application/x-ms-dos-executable;application/x-msdownload;application/vnd.microsoft.portable-executable;application/x-msi;application/x-ms-shortcut;application/x-ms-ne-executable;application/x-bat;application/x-wine-extension-msp;

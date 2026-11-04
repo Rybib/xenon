@@ -1,0 +1,13 @@
+packages/xenon-system/sysctl/90-xenon.conf usr/lib/sysctl.d/
+packages/xenon-system/50-xenon-zram.conf usr/lib/systemd/zram-generator.conf.d/
+packages/xenon-system/pipewire/50-xenon-lowlatency.conf usr/share/pipewire/pipewire.conf.d/
+packages/xenon-system/pipewire/50-xenon-pulse-lowlatency.conf usr/share/pipewire/pipewire-pulse.conf.d/
+packages/xenon-system/security/95-xenon-audio.conf etc/security/limits.d/
+packages/xenon-system/udev/70-xenon-controllers.rules usr/lib/udev/rules.d/
+packages/xenon-system/schemas/90_xenon.gschema.override usr/share/glib-2.0/schemas/
+packages/xenon-system/firefox/policies.json etc/firefox/policies/
+packages/xenon-system/firefox/policies.json etc/firefox-esr/policies/
+packages/xenon-system/apt/21xenon-auto-upgrades etc/apt/apt.conf.d/
+packages/xenon-system/apt/xenon-backports etc/apt/preferences.d/
+packages/xenon-system/systemd/50-xenon-journald.conf usr/lib/systemd/journald.conf.d/
+packages/xenon-system/vm-selftest usr/lib/xenon/

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Xenon Settings
+Comment=Windows apps, drivers, privacy and updates
+Exec=xenon-settings
+Icon=xenon-logo
+Terminal=false
+Categories=GTK;Settings;
+Keywords=windows;wine;exe;driver;nvidia;firewall;privacy;compatibility;
+StartupNotify=true
+X-GNOME-UsesNotifications=true

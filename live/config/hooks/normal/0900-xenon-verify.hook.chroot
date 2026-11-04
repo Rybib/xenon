@@ -1,0 +1,33 @@
+#!/bin/sh
+# Report on (and fail the build for) things Xenon depends on.
+set -e
+fail=0
+kernel_config=$(find /boot -maxdepth 1 -name "config-*" | sort -V | tail -n 1)
+echo "Xenon kernel: $(basename "$kernel_config" | sed 's/config-//')"
+if grep -q '^CONFIG_NTSYNC=[ym]' "$kernel_config"; then
+    echo "  NTSYNC: available"
+else
+    echo "  WARNING: kernel has no NTSYNC; Wine falls back to slower synchronization"
+fi
+grep -q '^CONFIG_UNICODE=y' "$kernel_config" && echo "  ext4 casefold: available"
+grep -q '^CONFIG_BINFMT_MISC=[ym]' "$kernel_config" && echo "  binfmt_misc: available"
+
+for cmd in xws xenon-settings calamares wine; do
+    if command -v "$cmd" >/dev/null 2>&1; then
+        echo "  $cmd: ok"
+    else
+        echo "  ERROR: $cmd missing"; fail=1
+    fi
+done
+for f in /usr/lib/xenon/xws/dxvk/VERSION /usr/lib/xenon/xws/vkd3d-proton/VERSION \
+         /usr/lib/xenon/xws/winetricks /usr/share/plymouth/themes/xenon/xenon.script; do
+    if [ -e "$f" ]; then
+        echo "  $f: ok"
+    else
+        echo "  ERROR: $f missing"; fail=1
+    fi
+done
+ls /usr/share/wine/mono /usr/share/wine/gecko 2>/dev/null || echo "  WARNING: Wine add-ons missing"
+# shellcheck disable=SC1091
+. /usr/lib/os-release && echo "  os-release: $PRETTY_NAME"
+exit $fail

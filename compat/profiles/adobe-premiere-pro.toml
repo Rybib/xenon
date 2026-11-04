@@ -1,0 +1,19 @@
+[app]
+id = "adobe-premiere-pro"
+name = "Adobe Premiere Pro"
+rating = "untested"
+notes = """
+Priority app, expected to be among the hardest. Hardware video decoding
+and GPU effects depend on Wine's media and GPU support. Shares Adobe's
+environment requirements with Photoshop. Needs verification.
+"""
+
+[match]
+exe = ["Adobe Premiere Pro.exe"]
+product = ["Adobe Premiere Pro*"]
+company = ["Adobe*"]
+
+[fix]
+isolated = true
+runtimes = ["vcrun2022", "msxml6", "corefonts"]
+windows_version = "win10"

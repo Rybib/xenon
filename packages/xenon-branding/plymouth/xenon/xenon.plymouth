@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Xenon
+Description=Xenon boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/xenon
+ScriptFile=/usr/share/plymouth/themes/xenon/xenon.script

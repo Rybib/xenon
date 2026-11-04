@@ -1,0 +1,23 @@
+# Game controllers: give the logged-in user raw HID access so games and
+# Windows programs (via Wine's HID support) get full controller features:
+# gyro, touchpad, rumble, LEDs. USB and Bluetooth.
+
+# Sony PlayStation (DualShock 4, DualSense)
+KERNEL=="hidraw*", ATTRS{idVendor}=="054c", TAG+="uaccess"
+KERNEL=="hidraw*", KERNELS=="*054C:*", TAG+="uaccess"
+# Nintendo (Switch Pro, Joy-Con)
+KERNEL=="hidraw*", ATTRS{idVendor}=="057e", TAG+="uaccess"
+KERNEL=="hidraw*", KERNELS=="*057E:*", TAG+="uaccess"
+# Microsoft (Xbox controllers)
+KERNEL=="hidraw*", ATTRS{idVendor}=="045e", TAG+="uaccess"
+KERNEL=="hidraw*", KERNELS=="*045E:*", TAG+="uaccess"
+# Valve (Steam Controller, Steam Deck)
+KERNEL=="hidraw*", ATTRS{idVendor}=="28de", TAG+="uaccess"
+KERNEL=="hidraw*", KERNELS=="*28DE:*", TAG+="uaccess"
+# 8BitDo
+KERNEL=="hidraw*", ATTRS{idVendor}=="2dc8", TAG+="uaccess"
+KERNEL=="hidraw*", KERNELS=="*2DC8:*", TAG+="uaccess"
+# Logitech gaming wheels and pads
+KERNEL=="hidraw*", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c2*", TAG+="uaccess"
+# Virtual input devices for controller remapping (Steam Input etc.)
+KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput"

@@ -1,0 +1,12 @@
+packages/xenon-installer/calamares/settings.conf etc/calamares/
+packages/xenon-installer/calamares/modules/*.conf etc/calamares/modules/
+packages/xenon-installer/calamares/branding/xenon/branding.desc etc/calamares/branding/xenon/
+packages/xenon-installer/calamares/branding/xenon/show.qml etc/calamares/branding/xenon/
+packages/xenon-installer/build/xenon-logo.png etc/calamares/branding/xenon/
+packages/xenon-installer/build/welcome.png etc/calamares/branding/xenon/
+packages/xenon-installer/scripts/target-setup usr/lib/xenon/installer/
+packages/xenon-installer/scripts/target-final usr/lib/xenon/installer/
+packages/xenon-installer/scripts/mark-nvidia usr/lib/xenon/installer/
+packages/xenon-installer/scripts/xenon-install usr/bin/
+packages/xenon-installer/live/xenon-install.desktop usr/share/applications/
+packages/xenon-installer/live/95_xenon-live.gschema.override usr/share/glib-2.0/schemas/

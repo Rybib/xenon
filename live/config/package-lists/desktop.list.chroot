@@ -1,0 +1,35 @@
+# Lightweight GNOME
+gnome-core
+gnome-software
+gnome-software-plugin-flatpak
+gnome-software-plugin-fwupd
+gnome-shell-extension-dashtodock
+gnome-shell-extension-appindicator
+power-profiles-daemon
+switcheroo-control
+xdg-user-dirs-gtk
+file-roller
+firefox-esr
+flatpak
+zenity
+x11-xserver-utils
+
+# Fonts (metric-compatible replacements for Microsoft fonts)
+fonts-noto-core
+fonts-noto-color-emoji
+fonts-liberation2
+fonts-crosextra-carlito
+fonts-crosextra-caladea
+fonts-dejavu-core
+
+# Boot splash
+plymouth
+plymouth-label
+
+# Installer (removed from the installed system)
+calamares
+grub-efi-amd64-bin
+grub-efi-amd64-signed
+shim-signed
+grub-pc-bin
+grub2-common

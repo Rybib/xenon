@@ -1,0 +1,41 @@
+{
+  "policies": {
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DontCheckDefaultBrowser": true,
+    "EnableTrackingProtection": {
+      "Value": true,
+      "Locked": false,
+      "Cryptomining": true,
+      "Fingerprinting": true,
+      "EmailTracking": true
+    },
+    "FirefoxHome": {
+      "SponsoredTopSites": false,
+      "SponsoredPocket": false,
+      "Pocket": false,
+      "Locked": false
+    },
+    "FirefoxSuggest": {
+      "SponsoredSuggestions": false,
+      "ImproveSuggest": false,
+      "Locked": false
+    },
+    "UserMessaging": {
+      "ExtensionRecommendations": false,
+      "FeatureRecommendations": false,
+      "MoreFromMozilla": false,
+      "SkipOnboarding": true,
+      "Locked": false
+    },
+    "SearchEngines": {
+      "Default": "DuckDuckGo"
+    },
+    "Preferences": {
+      "datareporting.healthreport.uploadEnabled": { "Value": false, "Status": "default" },
+      "browser.newtabpage.activity-stream.feeds.telemetry": { "Value": false, "Status": "default" },
+      "browser.ping-centre.telemetry": { "Value": false, "Status": "default" }
+    }
+  }
+}

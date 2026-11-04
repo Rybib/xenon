@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <defs>
+    <radialGradient id="bg" cx="0.62" cy="0.38" r="0.9">
+      <stop offset="0" stop-color="#EEF1FF"/><stop offset="1" stop-color="#C9D2F5"/>
+    </radialGradient>
+    <linearGradient id="a" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#67E8F9"/><stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="b" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D8B4FE"/><stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="90"/></filter>
+    <filter id="mid" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="22"/></filter>
+  </defs>
+  <rect width="3840" height="2160" fill="url(#bg)"/>
+  <g opacity="0.35" filter="url(#soft)">
+    <path d="M1900 520 C2300 900 2600 1300 3200 1720" stroke="url(#a)" stroke-width="260" fill="none" stroke-linecap="round"/>
+    <path d="M3150 470 C2700 900 2300 1300 1850 1700" stroke="url(#b)" stroke-width="260" fill="none" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.6" filter="url(#mid)">
+    <path d="M1900 520 C2300 900 2600 1300 3200 1720" stroke="url(#a)" stroke-width="54" fill="none" stroke-linecap="round"/>
+    <path d="M3150 470 C2700 900 2300 1300 1850 1700" stroke="url(#b)" stroke-width="54" fill="none" stroke-linecap="round"/>
+  </g>
+  <path d="M1900 520 C2300 900 2600 1300 3200 1720" stroke="#E0F7FF" stroke-opacity="0.75" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M3150 470 C2700 900 2300 1300 1850 1700" stroke="#F3E8FF" stroke-opacity="0.75" stroke-width="7" fill="none" stroke-linecap="round"/>
+</svg>

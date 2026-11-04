@@ -1,0 +1,72 @@
+name: ISO
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: iso-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build ISO
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL \
+            /usr/local/share/boost /usr/local/.ghcup
+          sudo docker image prune --all --force
+          df -h /
+      - uses: actions/checkout@v4
+      - name: Build in Debian 13 container
+        run: sudo tools/build-in-docker.sh
+      - name: Build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: |
+            out/build.log
+            build/live/build.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xenon-iso
+          path: |
+            out/*.iso
+            out/*.sha256
+          compression-level: 0
+          retention-days: 14
+
+  test:
+    name: Boot test in QEMU
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: xenon-iso
+          path: out
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Install QEMU
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-system-x86 xorriso socat imagemagick
+      - name: Boot to desktop and run the in-VM self-test
+        run: tools/test-iso.sh out/xenon-*-amd64.iso out/test-results
+      - name: Results (screenshot, serial logs, self-test report)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: out/test-results

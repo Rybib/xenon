@@ -1,0 +1,20 @@
+Source: xenon-xws-thirdparty
+Section: contrib/misc
+Priority: optional
+Maintainer: Xenon Project <Rybib@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/Rybib/xenon
+
+Package: xenon-xws-thirdparty
+Architecture: all
+Depends: ${misc:Depends}
+Enhances: xenon-xws
+Description: DirectX-to-Vulkan translation and runtime installer for XWS
+ Upstream release builds bundled for the Xenon Windows Subsystem:
+  * DXVK: Direct3D 8/9/10/11 on Vulkan (zlib license)
+  * VKD3D-Proton: Direct3D 12 on Vulkan (LGPL-2.1+)
+  * winetricks: installs Microsoft runtimes on demand, downloading them
+    from Microsoft (LGPL-2.1+)
+ The Windows DLLs are copied into each user's Windows environment by XWS.

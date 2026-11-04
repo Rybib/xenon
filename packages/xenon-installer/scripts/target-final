@@ -1,0 +1,13 @@
+#!/bin/sh
+# Runs inside the installed system after the bootloader is installed.
+set -u
+if [ -d /sys/firmware/efi ]; then
+    # Also install shim + GRUB to the removable-media path
+    # (EFI/BOOT/BOOTX64.EFI). Some firmware ignores boot entries, and this
+    # copy keeps working with Secure Boot because it is the signed shim.
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi \
+        --bootloader-id=debian --uefi-secure-boot --force-extra-removable \
+        --no-nvram || echo "xenon-target-final: removable EFI path not written"
+fi
+update-grub || true
+exit 0

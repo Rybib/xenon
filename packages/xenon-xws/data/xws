@@ -1,0 +1,8 @@
+#!/usr/bin/python3
+# Xenon Windows Subsystem command-line entry point.
+import sys
+
+sys.path.insert(0, "/usr/lib/xenon/xws")
+from xws.cli import main  # noqa: E402
+
+sys.exit(main())

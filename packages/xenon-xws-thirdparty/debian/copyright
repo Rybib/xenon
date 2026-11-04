@@ -1,0 +1,23 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: xenon-xws-thirdparty
+
+Files: *
+Copyright: 2026 The Xenon Project contributors
+License: GPL-3+
+ On Debian systems see /usr/share/common-licenses/GPL-3.
+
+Files: payload/dxvk/*
+Copyright: 2017-2026 Philip Rebohle and DXVK contributors
+License: Zlib
+ The full license is shipped as /usr/lib/xenon/xws/dxvk/LICENSE.
+
+Files: payload/vkd3d-proton/*
+Copyright: 2016-2026 Józef Kucia, Hans-Kristian Arntzen and contributors
+License: LGPL-2.1+
+ The full license is shipped as /usr/lib/xenon/xws/vkd3d-proton/LICENSE.
+ On Debian systems see /usr/share/common-licenses/LGPL-2.1.
+
+Files: payload/winetricks
+Copyright: 2007-2026 Dan Kegel, Austin English and winetricks contributors
+License: LGPL-2.1+
+ On Debian systems see /usr/share/common-licenses/LGPL-2.1.

@@ -1,0 +1,9 @@
+[app]
+id = "7-zip"
+name = "7-Zip"
+rating = "platinum"
+notes = "Long-standing platinum rating in the WineHQ AppDB. No fixes needed."
+
+[match]
+exe = ["7z*-x64.exe", "7zFM.exe"]
+product = ["7-Zip"]

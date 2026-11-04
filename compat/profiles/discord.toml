@@ -1,0 +1,16 @@
+[app]
+id = "discord"
+name = "Discord (Windows version)"
+rating = "untested"
+notes = """
+Works best as the native Linux app (Flatpak in Software), which also
+supports screen sharing on Wayland. The Windows build is supported for
+completeness.
+"""
+
+[match]
+exe = ["DiscordSetup.exe", "Discord.exe"]
+product = ["Discord*"]
+
+[fix]
+args = ["--disable-gpu-sandbox"]

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Kernel binfmt_misc handler: lets Windows programs run like native ones,
+# e.g. `./setup.exe` in a terminal. argv[1] is the full path of the .exe.
+exec /usr/bin/xws run "$@"

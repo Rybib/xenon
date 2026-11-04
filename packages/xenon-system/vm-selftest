@@ -1,0 +1,86 @@
+#!/bin/bash
+# shellcheck disable=SC2015,SC2153  # "cond && pass || fail": pass() always succeeds
+# Xenon in-VM self-test. Run by tools/test-iso.sh through the kernel
+# command line (systemd.run=/usr/lib/xenon/vm-selftest). Also useful on
+# real hardware: sudo /usr/lib/xenon/vm-selftest
+#
+# Checks every layer Xenon adds, including running a Windows program
+# through XWS, and prints a report between markers.
+set -u
+OUT=/dev/ttyS0
+[ -w "$OUT" ] || OUT=/dev/stdout
+exec > >(tee "$OUT") 2>&1
+
+pass=0; fail=0; warn=0
+ok()   { echo "  PASS $1"; pass=$((pass + 1)); }
+bad()  { echo "  FAIL $1"; fail=$((fail + 1)); }
+note() { echo "  WARN $1"; warn=$((warn + 1)); }
+check() { local name=$1; shift; if "$@" >/dev/null 2>&1; then ok "$name"; else bad "$name"; fi; }
+
+echo "XENON-SELFTEST-BEGIN"
+# shellcheck disable=SC1091
+. /usr/lib/os-release
+echo "  system: $PRETTY_NAME, kernel $(uname -r)"
+[[ "$NAME" == "Xenon" ]] && ok "os-release identifies Xenon" || bad "os-release"
+
+KCONF="/boot/config-$(uname -r)"
+if grep -q '^CONFIG_NTSYNC=[ym]' "$KCONF" 2>/dev/null; then
+    modprobe ntsync 2>/dev/null
+    if [ -e /dev/ntsync ]; then ok "NTSYNC driver (/dev/ntsync)"; else bad "NTSYNC device"; fi
+else
+    note "kernel built without NTSYNC"
+fi
+check "binfmt_misc handler for .exe" grep -q enabled /proc/sys/fs/binfmt_misc/xenon-pe
+mmc=$(sysctl -n vm.max_map_count)
+[ "$mmc" -ge 1048576 ] && ok "vm.max_map_count=$mmc" || bad "vm.max_map_count=$mmc"
+check "zram swap active" grep -q zram /proc/swaps
+check "firewall enabled in config" grep -q '^ENABLED=yes' /etc/ufw/ufw.conf
+check "Plymouth theme is xenon" sh -c 'plymouth-set-default-theme | grep -qx xenon'
+check "Calamares configured" test -f /etc/calamares/settings.conf
+check "Flathub remote" sh -c 'flatpak remotes --system | grep -q flathub'
+fav=$(GSETTINGS_BACKEND=memory gsettings get org.gnome.shell favorite-apps 2>/dev/null)
+[[ "$fav" == *xenon* ]] && ok "GNOME defaults applied" || bad "GNOME defaults ($fav)"
+
+wv=$(wine --version 2>/dev/null)
+if [[ "$wv" =~ wine-([0-9]+) ]] && [ "${BASH_REMATCH[1]}" -ge 10 ]; then
+    ok "Wine: $wv"
+else
+    bad "Wine missing or too old: $wv"
+fi
+check "DXVK payload" test -f /usr/lib/xenon/xws/dxvk/x64/d3d11.dll
+check "VKD3D-Proton payload" test -f /usr/lib/xenon/xws/vkd3d-proton/x64/d3d12.dll
+check "Wine Mono available" sh -c 'ls /usr/share/wine/mono/*.msi'
+
+# End-to-end: create a Windows environment as the live user and run a
+# Windows program through XWS.
+USER_NAME=$(getent passwd 1000 | cut -d: -f1)
+if [ -n "$USER_NAME" ]; then
+    UHOME=$(getent passwd "$USER_NAME" | cut -d: -f6)
+    as_user() { runuser -u "$USER_NAME" -- env HOME="$UHOME" XWS_NO_GUI=1 "$@"; }
+    if as_user timeout 900 xws --no-gui init; then
+        ok "Windows environment created for $USER_NAME"
+        PFX="$UHOME/.local/share/xenon/windows"
+        if cmp -s "$PFX/drive_c/windows/system32/d3d11.dll" /usr/lib/xenon/xws/dxvk/x64/d3d11.dll; then
+            ok "DXVK deployed into the environment"
+        else
+            bad "DXVK not deployed"
+        fi
+        as_user timeout 300 xws --no-gui run "$PFX/drive_c/windows/system32/cmd.exe" /c echo XWS-RUN-OK
+        if grep -q XWS-RUN-OK "$UHOME/.local/state/xenon/logs/cmd.exe.log" 2>/dev/null; then
+            ok "Windows program ran through XWS"
+        else
+            bad "Windows program did not run through XWS"
+        fi
+        echo "  xws doctor:"
+        as_user xws --no-gui doctor | sed 's/^/    /'
+    else
+        bad "Windows environment could not be created"
+    fi
+else
+    note "no live user found; skipping XWS end-to-end"
+fi
+
+echo "  summary: $pass passed, $fail failed, $warn warnings"
+if [ "$fail" -eq 0 ]; then echo "XENON-SELFTEST-PASS"; else echo "XENON-SELFTEST-FAIL"; fi
+sync
+exit 0

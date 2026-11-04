@@ -1,0 +1,15 @@
+[app]
+id = "adobe-illustrator"
+name = "Adobe Illustrator"
+rating = "untested"
+notes = "Priority app. Same environment needs as Photoshop. Needs verification."
+
+[match]
+exe = ["Illustrator.exe"]
+product = ["Adobe Illustrator*"]
+company = ["Adobe*"]
+
+[fix]
+isolated = true
+runtimes = ["vcrun2022", "msxml6", "corefonts"]
+windows_version = "win10"

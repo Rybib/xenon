@@ -1,0 +1,8 @@
+packages/xenon-settings/xenon_settings/*.py usr/lib/xenon/settings/xenon_settings/
+packages/xenon-settings/data/xenon-settings usr/bin/
+packages/xenon-settings/data/xenon-admin usr/lib/xenon/
+packages/xenon-settings/data/org.xenon.admin.policy usr/share/polkit-1/actions/
+packages/xenon-settings/data/xenon-settings.desktop usr/share/applications/
+packages/xenon-settings/data/xenon-welcome.desktop usr/share/applications/
+packages/xenon-settings/data/xenon-welcome-autostart.desktop etc/xdg/autostart/
+packages/xenon-settings/data/xenon-firstboot-drivers.service usr/lib/systemd/system/

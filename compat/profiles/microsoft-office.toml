@@ -1,0 +1,18 @@
+[app]
+id = "microsoft-office"
+name = "Microsoft Office (2016-2021 retail/volume)"
+rating = "untested"
+notes = """
+The classic MSI-based Office installers are the realistic target. The
+Microsoft 365 Click-to-Run installer is known not to work under Wine.
+For document work without Office, LibreOffice is available in Software.
+"""
+
+[match]
+product = ["Microsoft Office*"]
+company = ["Microsoft*"]
+
+[fix]
+isolated = true
+runtimes = ["msxml6", "corefonts", "gdiplus"]
+windows_version = "win7"

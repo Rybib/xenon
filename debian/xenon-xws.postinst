@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ]; then
+    # Refresh Windows app entries at every login.
+    if command -v deb-systemd-helper >/dev/null 2>&1; then
+        deb-systemd-helper --user enable xenon-xws-sync.service >/dev/null || true
+    fi
+    # Wine's own binfmt registration (binfmt-support) would compete with XWS.
+    if command -v update-binfmts >/dev/null 2>&1; then
+        update-binfmts --disable wine >/dev/null 2>&1 || true
+    fi
+    # Register the .exe handler now if we are on a running system.
+    if [ -d /run/systemd/system ] && [ -z "${DPKG_ROOT:-}" ]; then
+        systemctl restart systemd-binfmt.service >/dev/null 2>&1 || true
+        modprobe ntsync >/dev/null 2>&1 || true
+        udevadm trigger --subsystem-match=misc >/dev/null 2>&1 || true
+    fi
+fi
+
+#DEBHELPER#
+exit 0

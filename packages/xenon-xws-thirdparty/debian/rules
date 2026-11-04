@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+# The payload is fetched by ../fetch.sh before building (see tools/build-packages.sh).
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	test -f payload/dxvk/VERSION || { echo "run ./fetch.sh first"; exit 1; }
+
+override_dh_strip:
+override_dh_shlibdeps:
+override_dh_dwz:

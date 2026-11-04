@@ -1,0 +1,26 @@
+#!/bin/sh
+# Xenon Windows Subsystem: 32-bit support, WineHQ stable, the Xenon
+# packages (which depend on Wine), and the Wine Mono/Gecko add-ons so new
+# Windows environments are created without download prompts.
+set -e
+export DEBIAN_FRONTEND=noninteractive
+
+dpkg --add-architecture i386
+apt-get update
+
+# 32-bit graphics drivers for 32-bit Windows games.
+apt-get install -y --no-install-recommends \
+    mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386 libglx-mesa0:i386 \
+    gamemode:i386 libgamemode0:i386 libgamemodeauto0:i386 mangohud:i386 || \
+apt-get install -y --no-install-recommends \
+    mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386 libglx-mesa0:i386
+
+apt-get install -y --install-recommends winehq-stable
+
+# Xenon's own packages, staged by build-iso.sh.
+apt-get install -y /var/cache/xenon-debs/*.deb
+rm -rf /var/cache/xenon-debs
+
+/usr/lib/xenon/xws/fetch-wine-addons
+
+wine --version

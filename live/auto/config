@@ -1,0 +1,43 @@
+#!/bin/sh
+# live-build configuration for the Xenon live/install ISO.
+# Run through ../build-iso.sh, which prepares local packages and keys first.
+set -e
+
+XENON_VERSION="${XENON_VERSION:-1.0}"
+MIRROR="${XENON_MIRROR:-http://deb.debian.org/debian}"
+SECURITY_MIRROR="${XENON_SECURITY_MIRROR:-http://security.debian.org/debian-security}"
+
+lb config noauto \
+    --mode debian \
+    --system live \
+    --distribution trixie \
+    --architecture amd64 \
+    --archive-areas "main contrib non-free non-free-firmware" \
+    --mirror-bootstrap "$MIRROR" \
+    --mirror-chroot "$MIRROR" \
+    --mirror-binary "$MIRROR" \
+    --mirror-chroot-security "$SECURITY_MIRROR" \
+    --mirror-binary-security "$SECURITY_MIRROR" \
+    --security true \
+    --updates true \
+    --apt-recommends true \
+    --apt-indices true \
+    --cache true \
+    --cache-packages true \
+    --linux-flavours amd64 \
+    --firmware-chroot true \
+    --firmware-binary true \
+    --bootloaders "syslinux,grub-efi" \
+    --uefi-secure-boot enable \
+    --binary-images iso-hybrid \
+    --debian-installer none \
+    --memtest none \
+    --checksums sha256 \
+    --zsync false \
+    --chroot-squashfs-compression-type zstd \
+    --image-name "xenon-${XENON_VERSION}-amd64" \
+    --iso-application "Xenon" \
+    --iso-publisher "Xenon Project; https://github.com/Rybib/xenon" \
+    --iso-volume "Xenon ${XENON_VERSION} amd64" \
+    --bootappend-live "boot=live components quiet splash username=xenon hostname=xenon user-fullname=Xenon" \
+    "${@}"

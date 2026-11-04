@@ -1,0 +1,7 @@
+# WineHQ stable: the Windows runtime under the Xenon Windows Subsystem.
+Types: deb
+URIs: https://dl.winehq.org/wine-builds/debian
+Suites: trixie
+Components: main
+Architectures: amd64 i386
+Signed-By: /etc/apt/keyrings/winehq-archive.key

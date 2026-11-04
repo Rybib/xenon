@@ -1,0 +1,18 @@
+[app]
+id = "ableton-live"
+name = "Ableton Live"
+rating = "untested"
+notes = """
+Priority app. Audio goes Ableton -> Wine (WASAPI/MME) -> PipeWire, which
+Xenon configures for low latency. For the lowest latency choose a small
+buffer in Ableton's audio preferences; an ASIO bridge (WineASIO) is on
+the roadmap. Windows VST plugins install into the same environment.
+"""
+
+[match]
+exe = ["Ableton Live*.exe", "ableton_live_*.exe"]
+product = ["Ableton Live*"]
+company = ["Ableton*"]
+
+[fix]
+runtimes = ["vcrun2022", "corefonts"]

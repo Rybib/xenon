@@ -1,0 +1,14 @@
+[Unit]
+Description=Install the NVIDIA driver chosen in the Xenon installer
+ConditionPathExists=/var/lib/xenon/install-nvidia
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/xenon/xenon-admin drivers install auto
+# Retry on the next boot if offline; the flag stays until it succeeds.
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target

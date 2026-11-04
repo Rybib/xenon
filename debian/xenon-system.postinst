@@ -1,0 +1,20 @@
+#!/bin/sh
+set -e
+if [ "$1" = "configure" ] && [ -z "$2" ]; then
+    # Fresh install: firewall on (deny incoming, allow outgoing).
+    if [ -f /etc/ufw/ufw.conf ]; then
+        sed -i 's/^ENABLED=.*/ENABLED=yes/' /etc/ufw/ufw.conf
+    fi
+    # cups-browsed is not needed for driverless printing and has a history
+    # of network-facing security issues.
+    if [ -d /run/systemd/system ] || [ -d /etc/systemd/system ]; then
+        systemctl disable cups-browsed.service >/dev/null 2>&1 || true
+    fi
+    # Flathub for Linux apps in Software (needs network; harmless if offline).
+    if command -v flatpak >/dev/null 2>&1; then
+        flatpak remote-add --system --if-not-exists flathub \
+            https://dl.flathub.org/repo/flathub.flatpakrepo >/dev/null 2>&1 || true
+    fi
+fi
+#DEBHELPER#
+exit 0

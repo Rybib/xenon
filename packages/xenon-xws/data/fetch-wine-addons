@@ -1,0 +1,75 @@
+#!/usr/bin/python3 -I
+"""Download the Wine Mono (.NET) and Wine Gecko (HTML) installers that the
+installed Wine expects, so new Windows environments set them up silently
+instead of showing download prompts. Run at image build time and safe to
+re-run. Usage: fetch-wine-addons [--dry-run] [--dest /usr/share/wine]"""
+
+import argparse
+import re
+import sys
+import urllib.request
+from pathlib import Path
+
+SEARCH = ["/opt/wine-stable/lib/wine", "/opt/wine-staging/lib/wine",
+          "/usr/lib/x86_64-linux-gnu/wine", "/usr/lib/wine", "/usr/lib64/wine"]
+BASE = "https://dl.winehq.org/wine"
+
+
+def find_appwiz() -> Path | None:
+    for d in SEARCH:
+        for p in Path(d).glob("**/x86_64-windows/appwiz.cpl"):
+            return p
+    return None
+
+
+def wanted(appwiz: Path) -> list[tuple[str, str, str]]:
+    raw = appwiz.read_bytes()
+    # Strings may be stored as UTF-16; a NUL-stripped copy makes them searchable.
+    data = raw + b"\n" + raw.replace(b"\x00", b"")
+    out = []
+    for m in sorted(set(re.findall(rb"wine-mono-([0-9.]+)-x86\.msi", data))):
+        v = m.decode()
+        out.append(("mono", f"{BASE}/wine-mono/{v}/wine-mono-{v}-x86.msi",
+                    f"wine-mono-{v}-x86.msi"))
+    # 64-bit Wine needs both Gecko builds (32-bit programs run via WoW64).
+    for m in sorted(set(re.findall(rb"wine-gecko-([0-9.]+)-x86(?:_64)?\.msi", data))):
+        v = m.decode()
+        for arch in ("x86", "x86_64"):
+            out.append(("gecko", f"{BASE}/wine-gecko/{v}/wine-gecko-{v}-{arch}.msi",
+                        f"wine-gecko-{v}-{arch}.msi"))
+    return out
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--dest", default="/usr/share/wine")
+    ap.add_argument("--dry-run", action="store_true")
+    a = ap.parse_args()
+    appwiz = find_appwiz()
+    if not appwiz:
+        print("fetch-wine-addons: Wine not found", file=sys.stderr)
+        return 1
+    items = wanted(appwiz)
+    if not items:
+        print("fetch-wine-addons: could not determine add-on versions", file=sys.stderr)
+        return 1
+    for kind, url, name in items:
+        dest = Path(a.dest) / kind / name
+        if a.dry_run:
+            print(f"{url} -> {dest}")
+            continue
+        if dest.exists():
+            print(f"have {dest}")
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        tmp = dest.with_suffix(".part")
+        print(f"downloading {url}")
+        with urllib.request.urlopen(url, timeout=120) as r, open(tmp, "wb") as fh:
+            while chunk := r.read(1 << 20):
+                fh.write(chunk)
+        tmp.replace(dest)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

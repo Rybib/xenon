@@ -1,0 +1,12 @@
+packages/xenon-branding/build/icons/hicolor usr/share/icons/
+packages/xenon-branding/build/backgrounds/xenon-dark.png usr/share/backgrounds/xenon/
+packages/xenon-branding/build/backgrounds/xenon-light.png usr/share/backgrounds/xenon/
+packages/xenon-branding/build/backgrounds/grub.png usr/share/xenon/
+packages/xenon-branding/build/misc/*.png usr/share/xenon/
+packages/xenon-branding/build/plymouth/*.png usr/share/plymouth/themes/xenon/
+packages/xenon-branding/plymouth/xenon/xenon.plymouth usr/share/plymouth/themes/xenon/
+packages/xenon-branding/plymouth/xenon/xenon.script usr/share/plymouth/themes/xenon/
+packages/xenon-branding/etc/os-release usr/lib/
+packages/xenon-branding/etc/default/grub.d/xenon.cfg etc/default/grub.d/
+packages/xenon-branding/gdm/90-xenon-settings usr/share/gdm/dconf/
+packages/xenon-branding/background-properties/xenon.xml usr/share/gnome-background-properties/

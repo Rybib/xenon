@@ -1,0 +1,4 @@
+#!/bin/sh
+# Installer choice "NVIDIA driver": install it on first boot when online.
+mkdir -p /var/lib/xenon
+touch /var/lib/xenon/install-nvidia

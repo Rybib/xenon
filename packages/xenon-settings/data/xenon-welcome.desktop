@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome to Xenon
+Comment=Set up privacy, check your hardware and take a quick tour
+Exec=xenon-settings --welcome
+Icon=xenon-logo
+Terminal=false
+Categories=GTK;System;
+StartupNotify=true

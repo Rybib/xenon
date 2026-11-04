@@ -1,0 +1,4 @@
+payload/dxvk usr/lib/xenon/xws/
+payload/vkd3d-proton usr/lib/xenon/xws/
+payload/winetricks usr/lib/xenon/xws/
+payload/winetricks-COPYING usr/share/doc/xenon-xws-thirdparty/

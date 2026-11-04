@@ -1,0 +1,64 @@
+# Xenon desktop defaults. Users can change all of these.
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/xenon/xenon-light.png'
+picture-uri-dark='file:///usr/share/backgrounds/xenon/xenon-dark.png'
+picture-options='zoom'
+primary-color='#05070F'
+
+[org.gnome.desktop.screensaver]
+picture-uri='file:///usr/share/backgrounds/xenon/xenon-dark.png'
+primary-color='#05070F'
+
+[org.gnome.desktop.interface]
+color-scheme='prefer-dark'
+accent-color='purple'
+clock-show-weekday=true
+show-battery-percentage=true
+
+# Minimize and maximize buttons, as Windows users expect.
+[org.gnome.desktop.wm.preferences]
+button-layout='appmenu:minimize,maximize,close'
+
+[org.gnome.desktop.peripherals.touchpad]
+tap-to-click=true
+
+# Privacy: nothing is reported anywhere.
+[org.gnome.desktop.privacy]
+report-technical-problems=false
+send-software-usage-stats=false
+remove-old-temp-files=true
+remove-old-trash-files=true
+old-files-age=uint32 30
+
+[org.gnome.system.location]
+enabled=false
+
+# Sharp HiDPI and fractional scaling, including for Windows programs
+# (which draw through XWayland).
+[org.gnome.mutter]
+experimental-features=['scale-monitor-framebuffer', 'xwayland-native-scaling']
+center-new-windows=true
+
+[org.gnome.shell]
+favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop', 'org.gnome.Console.desktop', 'xenon-settings.desktop']
+enabled-extensions=['dash-to-dock@micxgx.gmail.com', 'ubuntu-appindicators@ubuntu.com']
+
+# An always-visible dock at the bottom works like a taskbar.
+[org.gnome.shell.extensions.dash-to-dock]
+dock-position='BOTTOM'
+dock-fixed=true
+extend-height=false
+dash-max-icon-size=40
+show-trash=false
+show-mounts=false
+click-action='minimize-or-previews'
+custom-theme-shrink=true
+transparency-mode='DYNAMIC'
+
+# Tray icons, including those of Windows programs.
+[org.gnome.shell.extensions.appindicator]
+legacy-tray-enabled=true
+
+[org.gnome.software]
+download-updates=true

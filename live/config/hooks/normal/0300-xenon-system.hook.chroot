@@ -1,0 +1,25 @@
+#!/bin/sh
+# System-wide defaults that need a full system in place.
+set -e
+
+# Boot splash.
+plymouth-set-default-theme xenon
+
+# Firewall on: deny incoming, allow outgoing.
+sed -i 's/^ENABLED=.*/ENABLED=yes/' /etc/ufw/ufw.conf
+
+# Flathub for Linux apps in Software.
+flatpak remote-add --system --if-not-exists flathub \
+    https://dl.flathub.org/repo/flathub.flatpakrepo
+
+# No unneeded network-facing daemons.
+systemctl disable cups-browsed.service 2>/dev/null || true
+
+# Hide Wine's own launchers; XWS handles Windows programs.
+for f in /usr/share/applications/wine*.desktop /opt/wine-stable/share/applications/*.desktop; do
+    [ -f "$f" ] || continue
+    grep -q '^NoDisplay=true' "$f" || sed -i 's/^\[Desktop Entry\]$/[Desktop Entry]\nNoDisplay=true/' "$f"
+done
+
+glib-compile-schemas /usr/share/glib-2.0/schemas
+update-initramfs -u -k all

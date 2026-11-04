@@ -1,0 +1,12 @@
+packages/xenon-xws/xws/*.py usr/lib/xenon/xws/xws/
+packages/xenon-xws/data/xws usr/bin/
+packages/xenon-xws/data/xws-binfmt usr/lib/xenon/xws/
+packages/xenon-xws/data/fetch-wine-addons usr/lib/xenon/xws/
+packages/xenon-xws/data/binfmt/xenon-pe.conf usr/lib/binfmt.d/
+packages/xenon-xws/data/xenon-windows-app.desktop usr/share/applications/
+packages/xenon-xws/data/mimeapps.list etc/xdg/
+packages/xenon-xws/data/udev/70-xenon-ntsync.rules usr/lib/udev/rules.d/
+packages/xenon-xws/data/modules/xenon-ntsync.conf usr/lib/modules-load.d/
+packages/xenon-xws/data/systemd-user/xenon-xws-sync.service usr/lib/systemd/user/
+packages/xenon-xws/data/xws.toml usr/share/xenon/
+compat/profiles/*.toml usr/share/xenon/compat/profiles/

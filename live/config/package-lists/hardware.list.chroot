@@ -1,0 +1,16 @@
+# Graphics: Mesa (AMD, Intel, NVK) with Vulkan and video acceleration
+mesa-vulkan-drivers
+libgl1-mesa-dri
+mesa-va-drivers
+intel-media-va-driver
+vulkan-tools
+
+# Gaming
+gamemode
+mangohud
+gamescope
+
+# Gaming mice and keyboards: buttons, DPI, Logitech receivers
+ratbagd
+piper
+solaar

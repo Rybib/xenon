@@ -1,0 +1,20 @@
+[app]
+id = "adobe-photoshop"
+name = "Adobe Photoshop"
+rating = "untested"
+notes = """
+Priority app. Known state in the Wine community: older standalone
+versions (CC 2015-2021) can run; the Creative Cloud desktop installer is
+the main blocker. GPU features need a working Vulkan driver. This
+profile is a starting point and must be verified on real hardware.
+"""
+
+[match]
+exe = ["Photoshop.exe", "Photoshop_Set-Up.exe"]
+product = ["Adobe Photoshop*"]
+company = ["Adobe*"]
+
+[fix]
+isolated = true
+runtimes = ["vcrun2022", "vcrun2013", "msxml6", "corefonts"]
+windows_version = "win10"

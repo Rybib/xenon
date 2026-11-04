@@ -1,0 +1,47 @@
+# Core system
+sudo
+locales
+console-setup
+keyboard-configuration
+tzdata
+bash-completion
+ca-certificates
+curl
+pciutils
+usbutils
+systemd-zram-generator
+unattended-upgrades
+ufw
+mokutil
+efibootmgr
+os-prober
+cryptsetup
+cryptsetup-initramfs
+intel-microcode
+amd64-microcode
+
+# Networking
+network-manager
+wpasupplicant
+iw
+wireless-regdb
+bluez
+bluez-firmware
+
+# Audio (PipeWire, low latency) and MIDI
+pipewire-audio
+pipewire-jack
+wireplumber
+rtkit
+alsa-utils
+
+# Printing and scanning (driverless)
+cups
+cups-pk-helper
+ipp-usb
+avahi-daemon
+sane-utils
+sane-airscan
+
+# Firmware updates
+fwupd

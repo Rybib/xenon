@@ -1,0 +1,9 @@
+# Xenon: open Windows programs, installers and shortcuts with XWS.
+[Default Applications]
+application/x-ms-dos-executable=xenon-windows-app.desktop
+application/x-msdownload=xenon-windows-app.desktop
+application/vnd.microsoft.portable-executable=xenon-windows-app.desktop
+application/x-msi=xenon-windows-app.desktop
+application/x-ms-shortcut=xenon-windows-app.desktop
+application/x-ms-ne-executable=xenon-windows-app.desktop
+application/x-wine-extension-msp=xenon-windows-app.desktop

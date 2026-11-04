@@ -1,0 +1,169 @@
+#!/usr/bin/python3 -I
+"""Privileged actions for Xenon Settings, run through polkit (pkexec).
+
+Deliberately tiny and strict: a fixed set of commands with validated
+arguments. Usage:
+
+  xenon-admin firewall on|off|status
+  xenon-admin updates on|off|status
+  xenon-admin drivers install nvidia|nvidia-open|auto
+  xenon-admin drivers status
+"""
+
+import os
+import re
+import secrets
+import subprocess
+import sys
+from pathlib import Path
+
+os.environ["PATH"] = "/usr/sbin:/usr/bin:/sbin:/bin"
+os.environ["DEBIAN_FRONTEND"] = "noninteractive"
+os.environ.pop("PYTHONPATH", None)
+
+AUTO_UPGRADES = Path("/etc/apt/apt.conf.d/21xenon-auto-upgrades")
+LOG = Path("/var/log/xenon/drivers.log")
+FLAG = Path("/var/lib/xenon/install-nvidia")
+
+
+def run(cmd, log=None, check=True):
+    if log:
+        with open(log, "a") as fh:
+            fh.write(f"\n$ {' '.join(cmd)}\n")
+            fh.flush()
+            rc = subprocess.run(cmd, stdout=fh, stderr=subprocess.STDOUT).returncode
+    else:
+        rc = subprocess.run(cmd).returncode
+    if check and rc != 0:
+        sys.exit(f"command failed ({rc}): {' '.join(cmd)}")
+    return rc
+
+
+def firewall(action):
+    if action == "on":
+        run(["ufw", "--force", "enable"])
+    elif action == "off":
+        run(["ufw", "disable"])
+    elif action == "status":
+        run(["ufw", "status", "verbose"], check=False)
+    else:
+        usage()
+
+
+def updates(action):
+    if action == "status":
+        print("on" if 'Unattended-Upgrade "1"' in AUTO_UPGRADES.read_text() else "off")
+        return
+    if action not in ("on", "off"):
+        usage()
+    v = "1" if action == "on" else "0"
+    AUTO_UPGRADES.write_text(
+        "// Xenon: install security updates automatically and quietly.\n"
+        "// Toggle in Xenon Settings > Updates.\n"
+        f'APT::Periodic::Update-Package-Lists "{v}";\n'
+        f'APT::Periodic::Unattended-Upgrade "{v}";\n'
+        'APT::Periodic::AutocleanInterval "7";\n')
+
+
+def nvidia_gpu_name():
+    try:
+        out = subprocess.run(["lspci", "-mm"], capture_output=True, text=True).stdout
+    except OSError:
+        return None
+    for line in out.splitlines():
+        if re.search(r'"(VGA compatible controller|3D controller|Display controller)"', line) \
+                and "NVIDIA" in line:
+            return line
+    return None
+
+
+def secure_boot_enabled():
+    out = subprocess.run(["mokutil", "--sb-state"], capture_output=True, text=True)
+    return "SecureBoot enabled" in out.stdout
+
+
+def enroll_mok():
+    """With Secure Boot on, DKMS signs the NVIDIA module with a local key
+    that the firmware must trust. Queue it for enrollment and tell the user
+    the one-time code to confirm at the next restart."""
+    key = Path("/var/lib/dkms/mok.pub")
+    if not key.exists():
+        return None
+    check = subprocess.run(["mokutil", "--test-key", str(key)], capture_output=True,
+                           text=True)
+    if "already enrolled" in (check.stdout + check.stderr):
+        return None
+    code = "".join(secrets.choice("0123456789") for _ in range(8))
+    p = subprocess.run(["mokutil", "--import", str(key)], input=f"{code}\n{code}\n",
+                       text=True, capture_output=True)
+    if p.returncode != 0:
+        return None
+    return code
+
+
+def drivers(args):
+    if not args:
+        usage()
+    if args[0] == "status":
+        mod = Path("/sys/module/nvidia").exists()
+        print("nvidia loaded" if mod else "nvidia not loaded")
+        return
+    if args[0] != "install" or len(args) != 2:
+        usage()
+    flavour = args[1]
+    if flavour == "auto":
+        name = nvidia_gpu_name()
+        if not name:
+            print("No NVIDIA graphics card found; nothing to install.")
+            FLAG.unlink(missing_ok=True)
+            return
+        open_ok = re.search(r"\b(RTX|GTX 16\d\d|MX[45]\d\d|T\d{3,4}|A\d{2,4}|L\d{1,2}|H\d{2,3})\b",
+                            name)
+        flavour = "nvidia-open" if open_ok else "nvidia"
+    if flavour not in ("nvidia", "nvidia-open"):
+        usage()
+    LOG.parent.mkdir(parents=True, exist_ok=True)
+    kernel_module = "nvidia-open-kernel-dkms" if flavour == "nvidia-open" \
+        else "nvidia-kernel-dkms"
+    pkgs = ["linux-headers-amd64", kernel_module, "nvidia-driver",
+            "firmware-misc-nonfree", "nvidia-vulkan-icd", "nvidia-suspend-common"]
+    # 32-bit driver libraries for 32-bit Windows games.
+    archs = subprocess.run(["dpkg", "--print-foreign-architectures"], capture_output=True,
+                           text=True).stdout.split()
+    if "i386" in archs:
+        pkgs += ["nvidia-driver-libs:i386", "nvidia-vulkan-icd:i386"]
+    run(["apt-get", "update"], LOG)
+    run(["apt-get", "install", "-y", "--no-install-recommends", *pkgs], LOG)
+    FLAG.unlink(missing_ok=True)
+    print("NVIDIA driver installed. Restart to use it.")
+    if secure_boot_enabled():
+        code = enroll_mok()
+        if code:
+            print(
+                "Secure Boot is on, so your PC must trust the new driver (MOK). At the "
+                "next restart a blue \"MOK management\" screen appears: choose "
+                f"\"Enroll MOK\", then \"Continue\", \"Yes\", and type this code: {code}")
+
+
+def usage():
+    sys.exit(__doc__)
+
+
+def main():
+    if os.geteuid() != 0:
+        sys.exit("xenon-admin must run as root (through pkexec)")
+    if len(sys.argv) < 2:
+        usage()
+    cmd, args = sys.argv[1], sys.argv[2:]
+    if cmd == "firewall" and len(args) == 1:
+        firewall(args[0])
+    elif cmd == "updates" and len(args) == 1:
+        updates(args[0])
+    elif cmd == "drivers":
+        drivers(args)
+    else:
+        usage()
+
+
+if __name__ == "__main__":
+    main()

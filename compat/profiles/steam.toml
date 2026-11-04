@@ -1,0 +1,21 @@
+[app]
+id = "steam"
+name = "Steam (Windows version)"
+rating = "untested"
+notes = """
+Steam gets its own isolated environment so its bundled runtimes and the
+games it installs cannot disturb other programs. Games installed through
+it appear in the app grid automatically. The Steam web views use CEF;
+disabling GPU compositing avoids black windows on some drivers.
+Games with kernel-level anti-cheat will not run.
+"""
+
+[match]
+exe = ["SteamSetup.exe", "steam.exe"]
+product = ["Steam"]
+company = ["Valve*"]
+
+[fix]
+isolated = true
+runtimes = ["vcrun2022", "corefonts"]
+args = ["-cef-disable-gpu-compositing"]

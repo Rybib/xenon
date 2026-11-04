@@ -1,0 +1,6 @@
+[org/gnome/login-screen]
+logo='/usr/share/xenon/xenon-wordmark.png'
+
+[org/gnome/desktop/interface]
+color-scheme='prefer-dark'
+accent-color='purple'

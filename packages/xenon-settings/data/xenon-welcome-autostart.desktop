@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome to Xenon
+Exec=xenon-settings --autostart
+Icon=xenon-logo
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-Phase=Applications
+X-GNOME-Autostart-Delay=3

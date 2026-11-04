@@ -1,0 +1,13 @@
+# Xenon Windows Subsystem defaults. Override in /etc/xenon/xws.toml
+# (system-wide) or ~/.config/xenon/xws.toml (per user, written by Xenon
+# Settings). Run `xws config` to see the effective values.
+[xws]
+graphics_driver = "x11"      # "wayland" uses Wine's native Wayland driver
+windows_version = "win10"
+dxvk = true                   # DirectX 8-11 -> Vulkan
+vkd3d_proton = true           # DirectX 12 -> Vulkan
+gamemode = true
+mangohud = false
+auto_runtimes = true
+compat_profiles = true
+snapshot_keep = 10

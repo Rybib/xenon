@@ -1,0 +1,9 @@
+[app]
+id = "notepad-plus-plus"
+name = "Notepad++"
+rating = "platinum"
+notes = "Long-standing platinum rating in the WineHQ AppDB. No fixes needed."
+
+[match]
+exe = ["notepad++.exe", "npp.*.Installer*.exe"]
+product = ["Notepad++"]

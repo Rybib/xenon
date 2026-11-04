@@ -1,0 +1,37 @@
+#!/bin/sh
+# Runs inside the freshly copied system (chroot) before the bootloader is
+# installed. Copied to /tmp first because it removes its own package.
+set -eu
+export DEBIAN_FRONTEND=noninteractive
+log() { echo "xenon-target-setup: $*"; }
+
+# 1. Bootloader platform package for this machine's firmware. The live
+#    image carries both GRUB builds (they conflict, so only one is
+#    installed); the matching one is installed offline from a local copy.
+DEBS=/usr/share/xenon/installer/debs
+if [ -d /sys/firmware/efi ]; then
+    platform=grub-efi-amd64
+else
+    platform=grub-pc
+fi
+deb=$(find "$DEBS" -maxdepth 1 -name "${platform}_*.deb" 2>/dev/null | head -n 1)
+if [ -n "$deb" ]; then
+    log "installing $platform"
+    echo "grub-pc grub-pc/install_devices_empty boolean true" | debconf-set-selections
+    dpkg -i "$deb"
+else
+    log "WARNING: no $platform package in $DEBS"
+fi
+
+# 2. Remove everything that only makes sense on the live ISO.
+log "removing live-session packages"
+apt-get purge -y live-boot live-boot-initramfs-tools live-config \
+    live-config-systemd live-tools calamares xenon-installer 2>&1 || \
+    log "WARNING: some live packages could not be removed"
+rm -rf "$DEBS"
+rm -f /usr/share/glib-2.0/schemas/95_xenon-live.gschema.override
+rm -f /etc/xdg/autostart/xenon-live-prompt.desktop
+glib-compile-schemas /usr/share/glib-2.0/schemas || true
+
+# 3. The installed system starts the first-boot Welcome for the new user.
+log "done"

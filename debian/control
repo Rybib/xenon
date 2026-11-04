@@ -1,0 +1,128 @@
+Source: xenon
+Section: misc
+Priority: optional
+Maintainer: Xenon Project <Rybib@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13),
+               dh-python,
+               python3 (>= 3.11),
+               librsvg2-bin,
+               python3-pytest <!nocheck>
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/Rybib/xenon
+Vcs-Browser: https://github.com/Rybib/xenon
+Vcs-Git: https://github.com/Rybib/xenon.git
+
+Package: xenon-xws
+Architecture: all
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         python3 (>= 3.11),
+         winehq-stable | wine (>= 10),
+         zenity,
+         libnotify-bin,
+         xdg-user-dirs,
+         e2fsprogs,
+         x11-xserver-utils,
+         cabextract,
+         unzip,
+         p7zip-full,
+         curl
+Recommends: xenon-xws-thirdparty,
+            gamemode,
+            mangohud,
+            vulkan-tools,
+            desktop-file-utils,
+            fonts-liberation2,
+            fonts-crosextra-carlito,
+            fonts-crosextra-caladea,
+            fonts-noto-core,
+            fonts-dejavu-core
+Description: Xenon Windows Subsystem
+ Runs Windows programs as a built-in part of Xenon. XWS manages one
+ Windows environment per user on top of Wine, maps drives and user
+ folders, turns Start Menu shortcuts into app grid entries, installs
+ runtimes (Visual C++, DirectX extras, .NET) on demand, applies per-app
+ compatibility profiles and keeps registry snapshots. Double-clicking a
+ Windows installer (exe or msi) just works, and binfmt_misc lets Windows
+ programs run from a terminal.
+
+Package: xenon-branding
+Architecture: all
+Depends: ${misc:Depends},
+         plymouth,
+         plymouth-label
+Description: Xenon artwork and identity
+ Logo, icons, wallpapers, boot splash (Plymouth), boot menu (GRUB) and
+ login screen branding for Xenon, plus the operating system release
+ information (/usr/lib/os-release).
+
+Package: xenon-system
+Architecture: all
+Depends: ${misc:Depends},
+         systemd-zram-generator,
+         ufw,
+         unattended-upgrades,
+         flatpak
+Recommends: gamemode
+Description: Xenon system defaults and tuning
+ Gaming and desktop tuning (vm.max_map_count, split-lock handling, zram
+ swap), low-latency PipeWire audio for games and music production,
+ controller permissions, privacy-respecting GNOME and Firefox defaults,
+ automatic security updates, firewall on by default, and APT pinning for
+ the newer kernel, Mesa and NVIDIA packages from Debian backports.
+
+Package: xenon-settings
+Architecture: all
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         python3-gi,
+         gir1.2-gtk-4.0,
+         gir1.2-adw-1 (>= 1.5),
+         pkexec,
+         pciutils,
+         mokutil,
+         ufw,
+         xenon-xws
+Description: Xenon Settings and Welcome
+ Manage installed Windows apps, Windows compatibility, graphics drivers
+ (including NVIDIA), privacy, firewall and updates. Includes the
+ first-boot Welcome app with a hardware check.
+
+Package: xenon-installer
+Architecture: all
+Depends: ${misc:Depends},
+         calamares,
+         xenon-branding,
+         x11-xserver-utils,
+         sudo,
+         os-prober,
+         efibootmgr,
+         cryptsetup,
+         cryptsetup-initramfs
+Description: Xenon installer configuration (live session only)
+ Calamares configuration, branding and helper scripts used by the Xenon
+ live ISO to install Xenon. Removed automatically from installed systems.
+
+Package: xenon-desktop
+Architecture: all
+Depends: ${misc:Depends},
+         xenon-xws,
+         xenon-branding,
+         xenon-system,
+         xenon-settings,
+         gnome-core,
+         gnome-software,
+         gnome-software-plugin-flatpak,
+         gnome-shell-extension-dashtodock,
+         gnome-shell-extension-appindicator,
+         pipewire-audio,
+         network-manager,
+         fwupd
+Recommends: xenon-xws-thirdparty,
+            firefox-esr,
+            switcheroo-control,
+            power-profiles-daemon
+Description: Xenon desktop (metapackage)
+ Installs the complete Xenon desktop on top of Debian: GNOME, the Xenon
+ Windows Subsystem, settings, branding and system defaults.

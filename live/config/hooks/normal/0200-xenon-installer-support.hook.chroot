@@ -1,0 +1,9 @@
+#!/bin/sh
+# Keep both GRUB platform packages available offline for the installer:
+# grub-efi-amd64 for UEFI PCs, grub-pc for legacy BIOS. They conflict, so
+# the installer installs the right one into the new system.
+set -e
+mkdir -p /usr/share/xenon/installer/debs
+cd /usr/share/xenon/installer/debs
+apt-get download grub-efi-amd64 grub-pc
+ls -l

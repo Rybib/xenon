@@ -1,0 +1,7 @@
+#!/bin/sh
+# Start the Xenon installer from the live session.
+# Calamares runs as root through XWayland; allow root to use the display.
+if command -v xhost >/dev/null 2>&1; then
+    xhost +si:localuser:root >/dev/null 2>&1 || true
+fi
+exec sudo -E env QT_QPA_PLATFORM=xcb calamares "$@"

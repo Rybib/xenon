@@ -1,0 +1,18 @@
+[app]
+id = "epic-games-launcher"
+name = "Epic Games Launcher"
+rating = "untested"
+notes = """
+Isolated environment, like Steam. The launcher's prerequisite installer
+is skipped because XWS provides the runtimes itself. Easy Anti-Cheat
+games work only where the developer has enabled Linux/Wine support.
+"""
+
+[match]
+exe = ["EpicInstaller-*.msi", "EpicGamesLauncher.exe"]
+product = ["Epic Games Launcher*"]
+
+[fix]
+isolated = true
+runtimes = ["vcrun2022", "corefonts"]
+args = ["-SkipBuildPatchPrereq"]

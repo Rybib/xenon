@@ -1,0 +1,3 @@
+# Give logged-in users access to the NT synchronization driver, which Wine
+# uses for fast and correct Windows mutexes, semaphores and events.
+KERNEL=="ntsync", MODE="0644", TAG+="uaccess"

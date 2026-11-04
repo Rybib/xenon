@@ -12,6 +12,10 @@
 
 ## In a VM by hand (installer)
 
+Testing on your own computer with a coding agent? Hand it
+[`LOCAL-VM-TEST-AGENT.md`](LOCAL-VM-TEST-AGENT.md): it downloads the latest
+ISO, creates a VirtualBox VM and walks you through the checks.
+
 The installer can't be fully automated yet. Test it in a VM before every
 release.
 

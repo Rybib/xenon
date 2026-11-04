@@ -14,7 +14,7 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends wine64 wine32:i386 \
+          sudo apt-get install -y --no-install-recommends wine wine64 wine32:i386 \
             mingw-w64 xvfb xauth python3-pytest desktop-file-utils make
       - name: Unit tests
         run: python3 -m pytest -q packages/xenon-xws/tests packages/xenon-settings/tests
@@ -52,7 +52,7 @@ jobs:
       - name: Build dependencies
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends debhelper dh-python python3 \
+          apt-get install -y --no-install-recommends build-essential debhelper dh-python python3 \
             python3-pytest librsvg2-bin dpkg-dev fakeroot curl zstd ca-certificates \
             lintian
       - name: Build packages

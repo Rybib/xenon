@@ -136,7 +136,15 @@ def find_wine() -> str | None:
     for candidate in ("/opt/wine-stable/bin/wine", "/opt/wine-staging/bin/wine"):
         if os.access(candidate, os.X_OK):
             return candidate
-    return shutil.which("wine") or shutil.which("wine64")
+    for name in ("wine", "wine-stable", "wine64"):
+        found = shutil.which(name)
+        if found:
+            return found
+    # Debian/Ubuntu's wine64 package without the "wine" front-end package.
+    for candidate in ("/usr/lib/wine/wine", "/usr/lib/wine/wine64"):
+        if os.access(candidate, os.X_OK):
+            return candidate
+    return None
 
 
 def wine_tool(name: str) -> str | None:

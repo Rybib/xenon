@@ -39,7 +39,7 @@ PFX="$HOME/.local/share/xenon/windows"
 APPS="$HOME/.local/share/applications"
 
 echo "== first-run setup"
-xws init >/dev/null
+xws init > "$WORK/init.log" 2>&1 || { cat "$WORK/init.log"; fail "first-run setup"; }
 [ -f "$PFX/system.reg" ] && pass "environment created" || fail "environment created"
 [ "$(readlink "$PFX/dosdevices/c:")" = "../drive_c" ] && pass "C: mapped" || fail "C: mapped"
 cmp -s "$PFX/drive_c/windows/system32/d3d11.dll" "$XWS_LIB_DIR/dxvk/x64/d3d11.dll" \

@@ -33,7 +33,7 @@ if [ -z "${SKIP_DEPS:-}" ]; then
     echo "==> Installing build dependencies"
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        live-build debhelper dh-python python3 python3-pytest librsvg2-bin \
+        live-build build-essential debhelper dh-python python3 python3-pytest librsvg2-bin \
         dpkg-dev fakeroot curl zstd ca-certificates xorriso squashfs-tools \
         mtools dosfstools grub-efi-amd64-bin grub-pc-bin syslinux isolinux \
         syslinux-common shim-signed grub-efi-amd64-signed

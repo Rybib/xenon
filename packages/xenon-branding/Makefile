@@ -10,9 +10,10 @@ icons:
 	  mkdir -p $(OUT)/icons/hicolor/$${s}x$${s}/apps; \
 	  $(RSVG) -w $$s -h $$s art/xenon-logo.svg -o $(OUT)/icons/hicolor/$${s}x$${s}/apps/xenon-logo.png; \
 	  $(RSVG) -w $$s -h $$s art/xenon-windows-app.svg -o $(OUT)/icons/hicolor/$${s}x$${s}/apps/xenon-windows-app.png; \
+	  $(RSVG) -w $$s -h $$s art/xenon-install.svg -o $(OUT)/icons/hicolor/$${s}x$${s}/apps/xenon-install.png; \
 	done
 	mkdir -p $(OUT)/icons/hicolor/scalable/apps $(OUT)/icons/hicolor/symbolic/apps
-	cp art/xenon-logo.svg art/xenon-windows-app.svg $(OUT)/icons/hicolor/scalable/apps/
+	cp art/xenon-logo.svg art/xenon-windows-app.svg art/xenon-install.svg $(OUT)/icons/hicolor/scalable/apps/
 	cp art/xenon-logo-symbolic.svg $(OUT)/icons/hicolor/symbolic/apps/
 
 wallpapers:

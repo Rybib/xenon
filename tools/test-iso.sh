@@ -17,7 +17,14 @@ TIMEOUT="${BOOT_TIMEOUT:-900}"
 mkdir -p "$RES"
 TMP="$(mktemp -d)"
 QPID=""
-trap '[ -n "$QPID" ] && kill "$QPID" 2>/dev/null; rm -rf "$TMP"' EXIT
+# shellcheck disable=SC2317  # called via trap
+cleanup() {
+    local rc=$?
+    if [ -n "$QPID" ]; then kill "$QPID" 2>/dev/null || true; fi
+    rm -rf "$TMP"
+    exit "$rc"
+}
+trap cleanup EXIT
 
 echo "==> Extracting kernel and initrd"
 KERNEL_PATH="$(xorriso -indev "$ISO" -find /live -name 'vmlinuz*' 2>/dev/null \

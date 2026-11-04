@@ -22,6 +22,11 @@ echo "XENON-SELFTEST-BEGIN"
 . /usr/lib/os-release
 echo "  system: $PRETTY_NAME, kernel $(uname -r)"
 [[ "$NAME" == "Xenon" ]] && ok "os-release identifies Xenon" || bad "os-release"
+# What GNOME and most programs read:
+grep -qx 'NAME="Xenon"' /etc/os-release && ok "/etc/os-release identifies Xenon" \
+    || bad "/etc/os-release still says: $(grep ^PRETTY_NAME /etc/os-release)"
+fav_tour=$(GSETTINGS_BACKEND=memory gsettings get org.gnome.shell welcome-dialog-last-shown-version 2>/dev/null)
+[[ "$fav_tour" == *9999* ]] && ok "GNOME tour disabled" || bad "GNOME tour still enabled ($fav_tour)"
 
 KCONF="/boot/config-$(uname -r)"
 if grep -q '^CONFIG_NTSYNC=[ym]' "$KCONF" 2>/dev/null; then
@@ -53,7 +58,17 @@ check "Wine Mono available" sh -c 'ls /usr/share/wine/mono/*.msi'
 
 # End-to-end: create a Windows environment as the live user and run a
 # Windows program through XWS.
-USER_NAME=$(getent passwd 1000 | cut -d: -f1)
+# The live user is created by live-config during boot; wait for it, and
+# fall back to a temporary test user so this check always runs.
+for _ in $(seq 1 60); do
+    USER_NAME=$(getent passwd 1000 | cut -d: -f1)
+    [ -n "$USER_NAME" ] && break
+    sleep 2
+done
+if [ -z "$USER_NAME" ]; then
+    useradd -m -u 1000 -s /bin/bash xenon-selftest && USER_NAME=xenon-selftest \
+        && note "live user not created yet; using a temporary test user"
+fi
 if [ -n "$USER_NAME" ]; then
     UHOME=$(getent passwd "$USER_NAME" | cut -d: -f6)
     as_user() { runuser -u "$USER_NAME" -- env HOME="$UHOME" XWS_NO_GUI=1 "$@"; }

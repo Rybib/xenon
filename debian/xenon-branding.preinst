@@ -4,6 +4,10 @@ set -e
 if [ "$1" = "install" ] || [ "$1" = "upgrade" ]; then
     dpkg-divert --package xenon-branding --add --rename \
         --divert /usr/lib/os-release.debian /usr/lib/os-release
+    # Debian 13 also ships /etc/os-release as a separate file; it becomes a
+    # link to Xenon's so every program (e.g. GNOME) sees the same identity.
+    dpkg-divert --package xenon-branding --add --rename \
+        --divert /etc/os-release.debian /etc/os-release
 fi
 #DEBHELPER#
 exit 0

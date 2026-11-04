@@ -43,6 +43,8 @@ center-new-windows=true
 [org.gnome.shell]
 favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop', 'org.gnome.Console.desktop', 'xenon-settings.desktop']
 enabled-extensions=['dash-to-dock@micxgx.gmail.com', 'ubuntu-appindicators@ubuntu.com']
+# Xenon has its own Welcome app; don't start GNOME's tour.
+welcome-dialog-last-shown-version='9999'
 
 # An always-visible dock at the bottom works like a taskbar.
 [org.gnome.shell.extensions.dash-to-dock]

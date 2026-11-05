@@ -92,6 +92,27 @@ fi
 kill "$QPID" 2>/dev/null || true
 wait "$QPID" 2>/dev/null || true
 
+# Boots 3-5: how Windows programs (Notepad, VLC) look on the desktop in each
+# window mode. Visual only: screenshots plus window details in the log.
+for mode in ${GUI_MODES:-desktop windows wayland}; do
+    echo "==> Boot: Windows apps on the desktop ($mode)"
+    boot "gui-$mode" "xenon.selftest-gui=$mode systemd.journald.forward_to_console=1"
+    if wait_for "$RES/gui-$mode-serial.log" "Started gdm.service|Started .*GNOME Display Manager" "$TIMEOUT"; then
+        wait_for "$RES/gui-$mode-serial.log" "xenon-gui-selftest.*== done" 400 || true
+        sleep 5
+        echo "screendump $TMP/gui.ppm" | socat - "UNIX-CONNECT:$TMP/gui-$mode.mon" >/dev/null
+        sleep 3
+        convert "$TMP/gui.ppm" "$RES/gui-$mode.png" 2>/dev/null || cp "$TMP/gui.ppm" "$RES/gui-$mode.ppm"
+        grep "xenon-gui-selftest" "$RES/gui-$mode-serial.log" | sed 's/^.*xenon-gui-selftest\[[0-9]*\]: //' \
+            > "$RES/gui-$mode.txt" || true
+        echo "    screenshot saved"
+    else
+        echo "    desktop did not start"
+    fi
+    kill "$QPID" 2>/dev/null || true
+    wait "$QPID" 2>/dev/null || true
+done
+
 if [ "$DESKTOP_OK" = 1 ] && grep -q "XENON-SELFTEST-PASS" "$RES/selftest-serial.log"; then
     echo "==> ISO test PASSED"
     exit 0

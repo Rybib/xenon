@@ -1,0 +1,50 @@
+#!/bin/bash
+# Xenon desktop integration test for Windows programs. Runs at login (from
+# /etc/xdg/autostart) but does nothing unless the kernel command line has
+#   xenon.selftest-gui=desktop|windows|wayland
+# which tools/test-iso.sh sets. It opens Wine's Notepad and portable VLC
+# through XWS in the chosen window mode, so the boot test can screenshot
+# how Windows programs look and fit on the GNOME desktop.
+set -u
+MODE=$(sed -n 's/.*xenon\.selftest-gui=\([a-z0-9-]*\).*/\1/p' /proc/cmdline)
+[ -n "$MODE" ] || exit 0
+
+LOG="$HOME/xenon-gui-selftest.log"
+exec >>"$LOG" 2>&1
+echo "== mode $MODE, $(date)"
+export XWS_NO_GUI=1
+
+case "$MODE" in
+    desktop) xws config graphics_driver x11; xws config window_frame desktop ;;
+    windows) xws config graphics_driver x11; xws config window_frame windows ;;
+    wayland) xws config graphics_driver wayland ;;
+    *) echo "unknown mode"; exit 1 ;;
+esac
+
+xws init
+PFX="$HOME/.local/share/xenon/windows"
+xws run --no-wait "$PFX/drive_c/windows/notepad.exe"
+
+VLC_VER=3.0.21
+CACHE="$HOME/.cache/xenon-selftest"
+mkdir -p "$CACHE"
+if curl -fsSL --retry 3 -o "$CACHE/vlc.zip" \
+        "https://download.videolan.org/pub/videolan/vlc/$VLC_VER/win64/vlc-$VLC_VER-win64.zip"; then
+    (cd "$CACHE" && unzip -qo vlc.zip)
+    sleep 4
+    xws run --no-wait "$CACHE/vlc-$VLC_VER/vlc.exe" --no-qt-privacy-ask
+else
+    echo "VLC download failed"
+fi
+
+# Record how the windows were set up (title bar ownership) for diagnosis.
+sleep 25
+if command -v xprop >/dev/null && command -v xwininfo >/dev/null; then
+    xwininfo -root -tree | grep -iE "notepad|vlc" | while read -r id _; do
+        echo "-- window $id"
+        xprop -id "$id" WM_NAME WM_CLASS _MOTIF_WM_HINTS _NET_WM_WINDOW_TYPE 2>&1
+    done
+fi
+echo "== done"
+# The boot test forwards the journal to the serial console.
+logger -t xenon-gui-selftest < "$LOG"

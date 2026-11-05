@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Xenon GUI self-test
+Comment=Only active when booted with xenon.selftest-gui= (automated testing)
+Exec=/usr/lib/xenon/vm-gui-selftest
+NoDisplay=true
+X-GNOME-Autostart-Phase=Applications
+X-GNOME-Autostart-Delay=8

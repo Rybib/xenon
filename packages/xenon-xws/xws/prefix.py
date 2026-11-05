@@ -21,7 +21,7 @@ from pathlib import Path
 from . import __version__, config, ui
 
 # Bump when configure() changes, so existing environments get re-applied.
-LAYOUT_VERSION = 3
+LAYOUT_VERSION = 4
 
 DXVK_DLLS = ["d3d8", "d3d9", "d3d10core", "d3d11", "dxgi"]
 VKD3D_DLLS = ["d3d12", "d3d12core"]
@@ -444,6 +444,22 @@ def registry_defaults(settings: config.Settings) -> str:
 
     graphics = "wayland,x11" if settings.graphics_driver == "wayland" else "x11"
     key(r"HKEY_CURRENT_USER\Software\Wine\Drivers", {"Graphics": _reg_str(graphics)})
+    # One title bar per window: either GNOME's or the program's, never both.
+    key(r"HKEY_CURRENT_USER\Software\Wine\X11 Driver", {
+        "Decorated": _reg_str("N" if settings.window_frame == "windows" else "Y"),
+        "Managed": _reg_str("Y"),
+    })
+    if settings.windows_theme == "light":
+        key(r"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\ThemeManager", {
+            "ThemeActive": _reg_str("1"),
+            "DllName": _reg_str(r"C:\windows\resources\themes\light\light.msstyles"),
+            "ColorName": _reg_str("NormalColor"),
+            "SizeName": _reg_str("NormalSize"),
+        })
+    else:
+        key(r"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\ThemeManager", {
+            "ThemeActive": _reg_str("0"),
+        })
     # No scary Wine crash dialogs; XWS reports failures itself.
     key(r"HKEY_CURRENT_USER\Software\Wine\WineDbg", {"ShowCrashDialog": "dword:00000000"})
     # Programs' own file types get desktop associations.

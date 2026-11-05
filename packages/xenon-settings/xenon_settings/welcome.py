@@ -248,4 +248,6 @@ class LiveWindow(Adw.ApplicationWindow):
 
 
 def is_live_session() -> bool:
+    if "xenon.selftest-gui=" in Path("/proc/cmdline").read_text():
+        return False  # automated GUI test: keep the screen clear
     return Path("/run/live/medium").is_dir()

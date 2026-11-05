@@ -11,3 +11,5 @@ packages/xenon-system/apt/21xenon-auto-upgrades etc/apt/apt.conf.d/
 packages/xenon-system/apt/xenon-backports etc/apt/preferences.d/
 packages/xenon-system/systemd/50-xenon-journald.conf usr/lib/systemd/journald.conf.d/
 packages/xenon-system/vm-selftest usr/lib/xenon/
+packages/xenon-system/vm-gui-selftest usr/lib/xenon/
+packages/xenon-system/xenon-gui-selftest.desktop etc/xdg/autostart/

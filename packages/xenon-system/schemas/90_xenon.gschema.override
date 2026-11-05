@@ -55,6 +55,8 @@ dash-max-icon-size=40
 show-trash=false
 show-mounts=false
 click-action='minimize-or-previews'
+# Start on the desktop, not in the Activities overview.
+disable-overview-on-startup=true
 custom-theme-shrink=true
 transparency-mode='DYNAMIC'
 

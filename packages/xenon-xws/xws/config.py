@@ -53,6 +53,12 @@ class Settings:
     # Which Wine graphics driver to use: "x11" (XWayland, the most
     # compatible today) or "wayland" (Wine's native Wayland driver).
     graphics_driver: str = "x11"
+    # Who draws window title bars (x11 driver): "desktop" (GNOME draws them,
+    # the program's own Windows title bar is hidden) or "windows" (the
+    # program draws a Windows-style title bar and GNOME draws none).
+    window_frame: str = "desktop"
+    # Windows look: "light" (Wine's flat modern theme) or "classic".
+    windows_theme: str = "light"
     # Windows version reported to programs.
     windows_version: str = "win10"
     # Translate DirectX 8-11 to Vulkan with DXVK, DirectX 12 with VKD3D-Proton.

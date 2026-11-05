@@ -33,3 +33,6 @@ grub-efi-amd64-signed
 shim-signed
 grub-pc-bin
 grub2-common
+
+# Window diagnostics (xprop, xwininfo)
+x11-utils

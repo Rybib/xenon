@@ -230,6 +230,17 @@ class CompatPage(Page):
             model=Gtk.StringList.new(["XWayland (recommended)", "Native Wayland"]))
         self.graphics.connect("notify::selected", self.on_graphics)
         g.add(self.graphics)
+        self.frame = Adw.ComboRow(
+            title="Window title bars",
+            subtitle="Who draws the title bar of Windows programs",
+            model=Gtk.StringList.new(["Xenon (matches your other apps)",
+                                      "Windows (drawn by the program)"]))
+        self.frame.connect("notify::selected", self.on_frame)
+        g.add(self.frame)
+        self.theme = Adw.SwitchRow(title="Modern Windows look",
+                                   subtitle="Flat buttons and controls in Windows programs")
+        self.theme.connect("notify::active", self.on_theme)
+        g.add(self.theme)
         self.winver_values = ["win11", "win10", "win81", "win7"]
         self.winver = Adw.ComboRow(
             title="Reported Windows version",
@@ -289,6 +300,8 @@ class CompatPage(Page):
         for key, row in self.switches.items():
             row.set_active(values.get(key, "True") == "True")
         self.graphics.set_selected(1 if values.get("graphics_driver") == "wayland" else 0)
+        self.frame.set_selected(1 if values.get("window_frame") == "windows" else 0)
+        self.theme.set_active(values.get("windows_theme", "light") == "light")
         wv = values.get("windows_version", "win10")
         self.winver.set_selected(self.winver_values.index(wv)
                                  if wv in self.winver_values else 1)
@@ -306,6 +319,12 @@ class CompatPage(Page):
 
     def on_graphics(self, row, _pspec):
         self._set("graphics_driver", "wayland" if row.get_selected() == 1 else "x11")
+
+    def on_frame(self, row, _pspec):
+        self._set("window_frame", "windows" if row.get_selected() == 1 else "desktop")
+
+    def on_theme(self, row, _pspec):
+        self._set("windows_theme", "light" if row.get_active() else "classic")
 
     def on_winver(self, row, _pspec):
         self._set("windows_version", self.winver_values[row.get_selected()])

@@ -29,6 +29,8 @@ class XenonApp(Adw.Application):
         opts = command_line.get_options_dict().end().unpack()
         if opts.get("welcome") or opts.get("autostart"):
             from .welcome import DONE_FLAG, LiveWindow, WelcomeWindow, is_live_session
+            if opts.get("autostart") and "xenon.selftest-gui=" in open("/proc/cmdline").read():
+                return 0
             if opts.get("autostart") and is_live_session():
                 win = LiveWindow(self)
             elif opts.get("autostart") and DONE_FLAG.exists():

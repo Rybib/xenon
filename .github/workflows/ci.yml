@@ -63,6 +63,11 @@ jobs:
         run: tools/build-packages.sh "$PWD/out/debs"
       - name: Lintian
         run: lintian --tag-display-limit 0 --suppress-tags package-installs-apt-preferences,no-manual-page,maintainer-script-calls-systemctl,appstream-metadata-missing-modalias-provide out/debs/*.deb
+      - name: Update system (publish, install, auto-update, tamper check)
+        run: |
+          apt-get install -y --no-install-recommends gnupg apt-utils xz-utils \
+            unattended-upgrades python3-apt
+          tools/test-updates.sh
       - name: Check GNOME settings overrides against the real schemas
         run: |
           apt-get install -y --no-install-recommends gnome-shell gnome-settings-daemon \

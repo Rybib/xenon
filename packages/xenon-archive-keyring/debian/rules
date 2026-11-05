@@ -1,0 +1,8 @@
+#!/usr/bin/make -f
+# xenon-archive-keyring.gpg is generated from the signing key by
+# tools/build-packages.sh (CI); it is never stored in git.
+%:
+	dh $@
+
+override_dh_auto_build:
+	test -s xenon-archive-keyring.gpg || { echo "missing xenon-archive-keyring.gpg"; exit 1; }

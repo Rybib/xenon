@@ -10,5 +10,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 exec docker run --rm --privileged \
     -e XENON_VERSION="${XENON_VERSION:-1.0}" \
     -e XENON_MIRROR="${XENON_MIRROR:-http://deb.debian.org/debian}" \
+    -e XENON_VERSION_SUFFIX \
+    -e XENON_REPO_KEY \
     -v "$ROOT:/xenon" -w /xenon \
     debian:trixie ./build-iso.sh

@@ -20,3 +20,9 @@ packages/xenon-xws-thirdparty/debian/debhelper-build-stamp
 packages/xenon-xws-thirdparty/debian/files
 packages/xenon-xws-thirdparty/debian/*.substvars
 packages/xenon-xws-thirdparty/debian/xenon-xws-thirdparty/
+xenon-archive-keyring.gpg
+packages/xenon-archive-keyring/debian/.debhelper/
+packages/xenon-archive-keyring/debian/debhelper-build-stamp
+packages/xenon-archive-keyring/debian/files
+packages/xenon-archive-keyring/debian/*.substvars
+packages/xenon-archive-keyring/debian/xenon-archive-keyring/

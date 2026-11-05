@@ -48,6 +48,11 @@ check "zram swap active" grep -q zram /proc/swaps
 check "firewall enabled in config" grep -q '^ENABLED=yes' /etc/ufw/ufw.conf
 check "Plymouth theme is xenon" sh -c 'plymouth-set-default-theme | grep -qx xenon'
 check "Calamares configured" test -f /etc/calamares/settings.conf
+if [ -f /etc/apt/sources.list.d/xenon.sources ] && ! grep -q '^Enabled: no' /etc/apt/sources.list.d/xenon.sources; then
+    ok "Xenon update repository configured"
+else
+    note "Xenon update repository not configured (no signing key at build time, or first build)"
+fi
 check "Flathub remote" sh -c 'flatpak remotes --system | grep -q flathub'
 fav=$(GSETTINGS_BACKEND=memory gsettings get org.gnome.shell favorite-apps 2>/dev/null)
 [[ "$fav" == *xenon* ]] && ok "GNOME defaults applied" || bad "GNOME defaults ($fav)"

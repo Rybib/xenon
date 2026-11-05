@@ -1,111 +1,92 @@
-# How Xenon updates (design)
+# How Xenon updates
 
-Status: **proposed**. Nothing here is built yet except the parts marked ✅.
+**Push to `main` → tests pass → every Xenon computer updates itself.**
+Users never reinstall and never have to click anything.
 
-## The short version
+## What happens on a push to `main`
 
-- Users never reinstall to get updates. Xenon updates like Debian and
-  Ubuntu do: through **APT**, shown in **Software**, installed automatically
-  in the background where safe.
-- Xenon's own packages come from a **Xenon APT repository** that GitHub
-  Actions builds and signs, hosted for free on **GitHub Pages** from this
-  repository.
-- **Pushing to `main` does not update anyone.** `main` feeds a *testing*
-  channel for you and testers. Users get an update when you **tag a
-  release** (`v0.2.0`), after all the automated tests have passed.
+```
+git push origin main
+   │
+   ▼
+GitHub Actions ─ ISO workflow (.github/workflows/iso.yml)
+   1. build   all packages, versioned 0.1.0+b<run number>, plus the ISO
+   2. test    boot the ISO in a VM: desktop, self-test, a Windows program
+              runs through XWS, Windows apps on the desktop
+   3. publish ONLY if 1 and 2 passed: sign a Debian package repository
+              with the Xenon key and deploy it to GitHub Pages
+              https://rybib.github.io/xenon/apt
+   │
+   ▼
+Every Xenon computer, once a day (apt-daily / apt-daily-upgrade timers):
+   APT downloads the repository, checks its signature against the Xenon
+   key, and unattended-upgrades installs the newer xenon-* packages in the
+   background. Changes take effect the next time a program starts (XWS and
+   Settings), at next login (desktop defaults) or next boot (boot splash).
+```
+
+A push that fails any test publishes nothing, so users keep the last
+version that passed. Pushes that only change documentation don't trigger a
+build. Separately, the CI workflow's `tools/test-updates.sh` checks the
+mechanism itself on every push: it publishes a signed repository, installs
+from it, publishes a newer build, confirms unattended-upgrades installs it
+on its own, and confirms APT rejects a tampered repository.
 
 ## What updates where
 
-| What | Comes from | Who builds it | How users get it |
-|---|---|---|---|
-| Debian base system, security fixes, kernel, Mesa | Debian (stable + backports) | Debian | ✅ automatically (unattended-upgrades) and in Software |
-| Wine | WineHQ's APT repository | WineHQ | ✅ in Software |
-| Linux apps | Flathub | app developers | ✅ in Software |
-| Firmware/BIOS | LVFS (fwupd) | hardware vendors | ✅ in Software |
-| **Xenon itself**: XWS, Settings, branding, defaults, compatibility profiles, DXVK/VKD3D-Proton | **Xenon APT repository** | **this repo's GitHub Actions** | in Software, plus automatic install (new) |
-| New installs | ISO | GitHub Actions | download (hosting still to choose) |
+| What | Comes from | How it updates |
+|---|---|---|
+| **Xenon**: XWS, Settings, branding, defaults, compatibility profiles, DXVK/VKD3D-Proton | Xenon repository (this repo's CI) | automatically, as above |
+| Debian base system, security fixes, kernel, Mesa | Debian (stable + backports) | automatically (security) and in Software |
+| Wine | WineHQ's repository | in Software |
+| Linux apps | Flathub | in Software |
+| Firmware/BIOS | LVFS (fwupd) | in Software |
+| New installs | the ISO from the latest ISO workflow run | download |
 
-So only one new piece is needed: the Xenon APT repository. Everything on
-users' machines that checks for and installs updates already exists in
-Debian/GNOME.
+Users can turn automatic updates off in **Xenon Settings → Updates**.
+**Settings → About → Xenon build** shows the installed build (`+b<number>`).
 
-## The release flow
+## Pieces
 
-```
- you push to main ──► CI (unit + Wine end-to-end + packages + ISO boot test)
-                         │ green
-                         ▼
-                 "testing" channel  ◄── opt-in (you, testers)
-                         │
- you: git tag v0.2.0 ──► same tests again, then
-                         ▼
-                 "stable" channel   ◄── every Xenon user
-                         │
-                         ▼
-     users' PCs: APT/PackageKit notices → Software shows the update,
-     or unattended-upgrades installs it quietly (Xenon packages only)
-```
+| File | Role |
+|---|---|
+| `tools/build-packages.sh` | stamps `XENON_VERSION_SUFFIX` into every package version; builds `xenon-archive-keyring` from the signing key |
+| `packages/xenon-archive-keyring/` | installs the public key, `/etc/apt/sources.list.d/xenon.sources` and the unattended-upgrades rule for `origin=Xenon` |
+| `tools/build-apt-repo.sh` | builds and signs the repository (InRelease, Release.gpg) |
+| `.github/workflows/iso.yml` → `publish` | deploys it to GitHub Pages after the tests |
+| `live/config/hooks/normal/0950-xenon-updates.hook.chroot` | in the very first ISO (before anything was published) disables the not-yet-existing repository |
+| `tools/setup-updates.sh` | one-time setup: key + secret + Pages |
+| `tools/test-updates.sh` | end-to-end test of the mechanism (CI) |
 
-To ship an update you would only run:
+## One-time setup (Ryan, on your own computer)
+
+The signing key proves updates really come from you, so it must be made on
+your computer, not by an automated session. With the GitHub CLI logged in
+(`gh auth login`) and GnuPG installed (macOS: `brew install gh gnupg`):
 
 ```bash
-git tag v0.2.0 && git push origin v0.2.0
+git clone https://github.com/Rybib/xenon.git && cd xenon
+tools/setup-updates.sh
 ```
 
-CI stamps the version into the packages (`0.2.0`; testing builds become
-`0.2.0~git20261105.abc1234`, which APT correctly treats as older than
-`0.2.0`), builds them, signs the repository, publishes it, and attaches the
-notes to a GitHub Release.
+It creates the key, stores it as the repository secret `XENON_REPO_KEY`,
+turns on GitHub Pages (source: GitHub Actions), and leaves a backup file
+`xenon-update-key-PRIVATE-….asc`. **Put that backup in a password manager
+and delete the file.** If the key is lost, installed systems can't be
+updated by a new key without a manual step; if it leaks, someone could
+publish updates. The script refuses to replace an existing key for that
+reason.
 
-## The repository
+After that, the next push to `main` publishes the first update, and ISOs
+built from then on update themselves.
 
-- URL: `https://rybib.github.io/xenon/apt` (GitHub Pages, from the
-  `gh-pages` branch that CI maintains). Pages allows 1 GB per site and
-  100 MB per file; Xenon's packages total about 50 MB per release.
-- Layout: a standard Debian repository with suites `stable` and `testing`,
-  built with `reprepro`, keeping the last few versions so people can roll
-  back.
-- Signing: a dedicated GPG key. The **private key lives only in a GitHub
-  Actions secret**; the public key ships in a new `xenon-archive-keyring`
-  package that's on every ISO, with
-  `/etc/apt/sources.list.d/xenon.sources` pointing at the stable suite.
-  APT refuses anything not signed by that key.
+## Limits and later improvements
 
-## On users' computers
-
-- `xenon-archive-keyring` + `xenon.sources`: APT knows where to look.
-- unattended-upgrades gets one more allowed origin (`o=Xenon,a=stable`),
-  so Xenon fixes install quietly, like Debian security fixes. That can be
-  turned off in Xenon Settings → Updates.
-- Software (PackageKit) shows Xenon updates next to app updates with no
-  extra work.
-- Testers can switch to `testing` with one line, or a future switch in
-  Settings.
-
-## Safety
-
-- A tag only publishes if every test passes, including booting the new ISO
-  and running a Windows program inside it.
-- Packages never break user data. XWS upgrades the Windows environment
-  through its layout version, as it does today.
-- A bad release is fixed by releasing a higher version. The repository
-  keeps older versions for manual rollback.
-- Later: Btrfs snapshots before upgrades (like openSUSE) so any update can
-  be undone from the boot menu.
-
-## What it needs from you (one time)
-
-1. **Create the signing key** on your own computer with
-   `tools/make-signing-key.sh` (to be written). Add the two values it prints
-   as repository secrets: Settings → Secrets and variables → Actions.
-2. **Turn on GitHub Pages**: Settings → Pages → Deploy from branch →
-   `gh-pages`.
-
-The key must be created by you: automated sessions can't add secrets to the
-repository, and a release key should never pass through a chat.
-
-## Bigger upgrades
-
-Debian's next stable release (14, "forky", expected around mid-2027)
-becomes a major Xenon release. It ships as a new ISO and an in-place upgrade
-that Xenon Settings guides, after it has been tested the same way.
+- The repository holds only the newest build. Rolling back means pushing a
+  fix (a revert is also a new, higher build).
+- One channel for everyone. A `testing` channel (every push) and `stable`
+  (tags only) can be added later by publishing two suites.
+- Debian's next major release (14, ~2027) will be a guided upgrade, not an
+  automatic one.
+- Btrfs snapshots before updates (undo from the boot menu) are a candidate
+  for later.

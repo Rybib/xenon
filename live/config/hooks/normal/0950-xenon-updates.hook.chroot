@@ -1,0 +1,18 @@
+#!/bin/sh
+# Xenon's update repository (from xenon-archive-keyring, built when CI has
+# the signing key). The very first build runs before the repository has
+# ever been published; APT would fail on it, so it is switched off in that
+# one ISO. Every later ISO has it on.
+set -e
+SRC=/etc/apt/sources.list.d/xenon.sources
+if [ ! -f "$SRC" ]; then
+    echo "WARNING: no signing key at build time: this ISO will not receive Xenon updates"
+    exit 0
+fi
+URI=$(sed -n 's/^URIs: *//p' "$SRC")
+if curl -fsI --retry 3 "$URI/dists/stable/InRelease" >/dev/null; then
+    echo "Xenon update repository: $URI (online)"
+else
+    echo "WARNING: $URI is not online yet; disabling it in this ISO"
+    echo "Enabled: no" >> "$SRC"
+fi

@@ -1,0 +1,3 @@
+xenon-archive-keyring.gpg usr/share/keyrings/
+xenon.sources etc/apt/sources.list.d/
+52xenon-unattended-upgrades etc/apt/apt.conf.d/

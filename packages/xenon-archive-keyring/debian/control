@@ -1,0 +1,17 @@
+Source: xenon-archive-keyring
+Section: misc
+Priority: optional
+Maintainer: Xenon Project <Rybib@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/Rybib/xenon
+
+Package: xenon-archive-keyring
+Architecture: all
+Depends: ${misc:Depends}
+Recommends: unattended-upgrades
+Description: Xenon update repository and signing key
+ Points APT at Xenon's update repository, trusts only Xenon's signing
+ key for it, and lets unattended-upgrades install Xenon updates
+ automatically in the background.

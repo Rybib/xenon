@@ -1,0 +1,7 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: xenon-archive-keyring
+
+Files: *
+Copyright: 2026 The Xenon Project contributors
+License: GPL-3+
+ On Debian systems see /usr/share/common-licenses/GPL-3.

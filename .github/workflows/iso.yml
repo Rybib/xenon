@@ -25,7 +25,14 @@ jobs:
           df -h /
       - uses: actions/checkout@v4
       - name: Build in Debian 13 container
-        run: sudo tools/build-in-docker.sh
+        env:
+          # Every build's packages get a higher version, so installed
+          # systems update to them.
+          XENON_VERSION_SUFFIX: "+b${{ github.run_number }}"
+          # Update signing key (see tools/setup-updates.sh). Without it the
+          # ISO is built without the update repository.
+          XENON_REPO_KEY: ${{ secrets.XENON_REPO_KEY }}
+        run: sudo -E tools/build-in-docker.sh
       - name: Build log
         if: always()
         uses: actions/upload-artifact@v4
@@ -41,6 +48,11 @@ jobs:
             out/*.iso
             out/*.sha256
           compression-level: 0
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xenon-debs
+          path: build/debs/*.deb
           retention-days: 14
 
   test:
@@ -71,3 +83,54 @@ jobs:
         with:
           name: test-results
           path: out/test-results
+
+  publish:
+    name: Publish update (signed APT repository)
+    # Only pushes to main, and only after the ISO built and passed its tests.
+    needs: [build, test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for the signing key
+        id: key
+        env:
+          XENON_REPO_KEY: ${{ secrets.XENON_REPO_KEY }}
+        run: |
+          if [ -z "$XENON_REPO_KEY" ]; then
+            echo "::warning::XENON_REPO_KEY is not set, so no update was published. Run tools/setup-updates.sh once (docs/UPDATES.md)."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/download-artifact@v4
+        if: steps.key.outputs.ok == 'true'
+        with:
+          name: xenon-debs
+          path: debs
+      - name: Build and sign the repository
+        if: steps.key.outputs.ok == 'true'
+        env:
+          XENON_REPO_KEY: ${{ secrets.XENON_REPO_KEY }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends apt-utils xz-utils
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          mkdir -m 700 "$GNUPGHOME"
+          printf '%s\n' "$XENON_REPO_KEY" | gpg --batch --quiet --import
+          FPR="$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/{print $10; exit}')"
+          tools/build-apt-repo.sh debs site "$FPR"
+          ls -R site | head -40
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.key.outputs.ok == 'true'
+        with:
+          path: site
+      - id: deploy
+        if: steps.key.outputs.ok == 'true'
+        uses: actions/deploy-pages@v4

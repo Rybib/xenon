@@ -121,6 +121,7 @@ Depends: ${misc:Depends},
          network-manager,
          fwupd
 Recommends: xenon-xws-thirdparty,
+            xenon-archive-keyring,
             firefox-esr,
             switcheroo-control,
             power-profiles-daemon

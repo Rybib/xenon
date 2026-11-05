@@ -1,0 +1,5 @@
+// Install Xenon updates automatically, like Debian security updates.
+// Turn automatic updates off in Xenon Settings > Updates.
+Unattended-Upgrade::Origins-Pattern {
+        "origin=Xenon,label=Xenon,a=stable";
+};

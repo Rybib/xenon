@@ -609,7 +609,13 @@ class AboutPage(Page):
                 wine = next((c["detail"] for c in json.loads(wine) if c["id"] == "wine"), "")
             except (OSError, ValueError, subprocess.TimeoutExpired):
                 pass
-            return [("Processor", hardware.cpu_name()),
+            try:
+                build = subprocess.run(["dpkg-query", "-W", "-f", "${Version}", "xenon-system"],
+                                       capture_output=True, text=True, timeout=10).stdout.strip()
+            except (OSError, subprocess.TimeoutExpired):
+                build = ""
+            return [("Xenon build", build or "Unknown"),
+                    ("Processor", hardware.cpu_name()),
                     ("Memory", f"{hardware.memory_gib():.1f} GiB"),
                     ("Graphics", gpus),
                     ("Linux kernel", util.kernel_release()),

@@ -1,0 +1,8 @@
+# Xenon updates: XWS, Settings, branding, defaults, compatibility profiles,
+# DXVK/VKD3D-Proton. Built and signed by github.com/Rybib/xenon's CI.
+Types: deb
+URIs: https://rybib.github.io/xenon/apt
+Suites: stable
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/xenon-archive-keyring.gpg

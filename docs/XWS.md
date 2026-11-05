@@ -54,6 +54,8 @@ xws reset --yes           delete the Windows environment
 | Key | Default | Meaning |
 |---|---|---|
 | `graphics_driver` | `x11` | `x11` (XWayland, most compatible) or `wayland` (Wine's native Wayland driver) |
+| `window_frame` | `desktop` | Who draws title bars: `desktop` (GNOME, matching other apps) or `windows` (the program). Never both |
+| `windows_theme` | `light` | `light` (Wine's flat modern theme) or `classic` |
 | `windows_version` | `win10` | Version reported to programs |
 | `dxvk` / `vkd3d_proton` | `true` | DirectX→Vulkan translation |
 | `gamemode` | `true` | Run detected games under GameMode |

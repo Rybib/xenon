@@ -107,6 +107,7 @@ docs/                        architecture, building, testing, roadmap, decisions
 - [Testing](docs/TESTING.md): VM testing and the real-hardware checklist
 - [Roadmap](docs/ROADMAP.md): phases and what's next
 - [Decisions](docs/DECISIONS.md): why things are the way they are
+- [Updates](docs/UPDATES.md): how updates reach users (design)
 - [Hardware](docs/HARDWARE.md): compatibility list
 
 ## License

@@ -86,9 +86,14 @@ echo "== tampered repository"
 # release file; its signature then no longer matches.
 sed -i 's/^Description: Xenon updates$/Description: tampered/' "$WORK/site/apt/dists/stable/InRelease"
 rm -f "$WORK/site/apt/dists/stable/Release" "$WORK/site/apt/dists/stable/Release.gpg"
-if apt-get update 2>&1 | grep -qiE "BADSIG|signatures were invalid|not signed"; then
+out="$(apt-get update 2>&1 || true)"
+# Wording differs between APT versions (gpgv vs. sqv), so check behaviour:
+# APT must report an error for the repository and must not use its data.
+if echo "$out" | grep "127.0.0.1" | grep -qE "^(Err|W:|E:)" \
+        && ! grep -qs "tampered" /var/lib/apt/lists/*_InRelease /var/lib/apt/lists/*_Packages; then
     pass "APT refuses a modified repository"
 else
+    echo "$out"
     fail "a modified repository was accepted"
 fi
 echo "== update system checks passed"

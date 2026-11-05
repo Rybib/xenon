@@ -1,0 +1,4 @@
+# Live ISO only: keeps GNOME Software from autostarting in the RAM-backed
+# live session (see postinst). The files belong to gnome-software, which is
+# not a build dependency, so lintian cannot know them.
+xenon-installer: diversion-for-unknown-file etc/xdg/autostart/* [postinst:*]

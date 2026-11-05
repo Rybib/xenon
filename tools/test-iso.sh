@@ -40,7 +40,7 @@ if [ -w /dev/kvm ]; then ACCEL=(-enable-kvm -cpu host); echo "    using KVM"; fi
 
 boot() { # name, extra kernel args; sets QPID
     local name=$1 args=$2
-    qemu-system-x86_64 "${ACCEL[@]}" -m 4096 -smp 4 -machine q35 \
+    qemu-system-x86_64 "${ACCEL[@]}" -m 6144 -smp 4 -machine q35 \
         -vga virtio -display none \
         -cdrom "$ISO" -kernel "$TMP/vmlinuz" -initrd "$TMP/initrd" \
         -append "boot=live components username=xenon hostname=xenon console=ttyS0,115200 systemd.show_status=1 $args" \

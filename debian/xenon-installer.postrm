@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+if [ "$1" = "remove" ] || [ "$1" = "purge" ] || [ "$1" = "abort-install" ]; then
+    for f in org.gnome.Software.desktop gnome-software-service.desktop; do
+        dpkg-divert --package xenon-installer --remove --rename \
+            --divert "/etc/xdg/autostart/$f.xenon-live-disabled" "/etc/xdg/autostart/$f"
+    done
+fi
+#DEBHELPER#
+exit 0

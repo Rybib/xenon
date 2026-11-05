@@ -12,6 +12,7 @@ MODE=$(sed -n 's/.*xenon\.selftest-gui=\([a-z0-9-]*\).*/\1/p' /proc/cmdline)
 LOG="$HOME/xenon-gui-selftest.log"
 exec >>"$LOG" 2>&1
 echo "== mode $MODE, $(date)"
+df -h / "$HOME" /run/live/overlay 2>/dev/null
 export XWS_NO_GUI=1
 
 case "$MODE" in
@@ -45,6 +46,7 @@ if command -v xprop >/dev/null && command -v xwininfo >/dev/null; then
         xprop -id "$id" WM_NAME WM_CLASS _MOTIF_WM_HINTS _NET_WM_WINDOW_TYPE 2>&1
     done
 fi
+df -h "$HOME" 2>/dev/null
 echo "== done"
 # The boot test forwards the journal to the serial console.
 logger -t xenon-gui-selftest < "$LOG"

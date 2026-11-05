@@ -23,6 +23,10 @@ from . import __version__, config, ui
 # Bump when configure() changes, so existing environments get re-applied.
 LAYOUT_VERSION = 4
 
+# A fresh Windows environment with DXVK, VKD3D-Proton and Wine Mono uses
+# roughly 700 MB; leave headroom for the first program.
+MIN_FREE_BYTES = 1024 * 2**20
+
 DXVK_DLLS = ["d3d8", "d3d9", "d3d10core", "d3d11", "dxgi"]
 VKD3D_DLLS = ["d3d12", "d3d12core"]
 
@@ -214,6 +218,13 @@ class Prefix:
     def create(self, log: Path) -> None:
         log.parent.mkdir(parents=True, exist_ok=True)
         self.path.mkdir(parents=True, exist_ok=True, mode=0o700)
+        free = shutil.disk_usage(self.path).free
+        if free < MIN_FREE_BYTES:
+            raise PrefixError(
+                f"Not enough free space: Windows support needs about "
+                f"{MIN_FREE_BYTES // 2**20} MB, and only {free // 2**20} MB is free. "
+                "Free up some space (or, when running Xenon from a USB stick, "
+                "install Xenon first) and try again.")
         self.drive_c.mkdir(exist_ok=True)
         self.enable_casefold(self.drive_c)
         env = self.base_env()

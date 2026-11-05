@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+# Live ISO only (this package is removed when Xenon is installed): don't
+# start Software in the background, where it would refresh catalogs into
+# the RAM-backed live filesystem. Removing the package restores it.
+if [ "$1" = "configure" ]; then
+    for f in org.gnome.Software.desktop gnome-software-service.desktop; do
+        dpkg-divert --package xenon-installer --add --rename \
+            --divert "/etc/xdg/autostart/$f.xenon-live-disabled" "/etc/xdg/autostart/$f"
+    done
+fi
+#DEBHELPER#
+exit 0

@@ -8,3 +8,10 @@ lock-enabled=false
 
 [org.gnome.desktop.session]
 idle-delay=uint32 0
+
+# The live session runs from RAM: don't refresh package lists or download
+# updates into it (the installed system does this normally).
+[org.gnome.software]
+download-updates=false
+allow-updates=false
+refresh-when-metered=false

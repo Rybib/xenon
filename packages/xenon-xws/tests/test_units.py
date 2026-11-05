@@ -239,3 +239,13 @@ def test_pe_rejects_garbage(tmp_path):
 def test_lnk_rejects_garbage():
     with pytest.raises(lnk.LnkError):
         lnk.parse_bytes(b"not a link" * 10)
+
+
+def test_low_disk_space_is_reported_clearly(tmp_path, monkeypatch):
+    from collections import namedtuple
+    from xws import prefix as prefix_mod
+    usage = namedtuple("usage", "total used free")
+    monkeypatch.setattr(prefix_mod.shutil, "disk_usage", lambda p: usage(10, 9, 200 * 2**20))
+    p = prefix_mod.Prefix(tmp_path / "pfx", "main")
+    with pytest.raises(prefix_mod.PrefixError, match="Not enough free space.*200 MB is free"):
+        p.create(tmp_path / "log.txt")

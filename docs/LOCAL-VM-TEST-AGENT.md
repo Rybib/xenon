@@ -26,10 +26,13 @@ Find the OS and CPU architecture:
 - Windows (PowerShell): `$env:PROCESSOR_ARCHITECTURE` (needs `AMD64`)
 - macOS / Linux: `uname -sm`
 
-**Stop and tell Ryan if this is an ARM computer** (Apple Silicon Mac
-M1–M4, `arm64`/`aarch64`, Windows on ARM). Xenon is built for Intel/AMD
-(x86-64); on ARM it can only run under full emulation, which is too slow to
-judge. Suggest testing on an Intel/AMD PC instead.
+**If this is an ARM computer** (Apple Silicon Mac M1–M5, `arm64`/`aarch64`),
+Xenon (built for Intel/AMD x86-64) can only run under full emulation: it
+works, but several times slower. Tell Ryan that, then follow the
+**Apple Silicon (UTM)** section below instead of steps 1 and 3. Use it for
+functional checks (installer, Settings, Windows apps installing and showing
+one title bar), never for judging speed or games. Windows on ARM: stop and
+suggest an Intel/AMD PC.
 
 Also check for at least **8 GB RAM** (6 GB goes to the VM) and **50 GB free
 disk space**. Hardware virtualization (VT-x / AMD-V) must be on in the
@@ -112,6 +115,25 @@ option, retry, and note it in the report. Start the VM:
 ```bash
 VBoxManage startvm Xenon --type gui
 ```
+
+## Apple Silicon Macs: UTM instead of VirtualBox
+
+1. Install UTM: `brew install --cask utm` (or https://mac.getutm.app),
+   plus `brew install git gh`, then do step 1's `gh auth login` and clone,
+   and step 2 (download the ISO) as written.
+2. Guide Ryan through UTM (it has no reliable command line for creating
+   VMs): **Create a New Virtual Machine → Emulate** (not "Virtualize", which
+   only runs ARM systems) **→ Linux**:
+   - Boot ISO image: the downloaded `xenon-*-amd64.iso`
+   - Architecture **x86_64**, System **Standard PC (Q35)**
+   - Memory **8192 MB**, CPU cores **6–8**
+   - Storage **40 GB**, no shared directory
+3. Start the VM. Booting takes several minutes under emulation, so be
+   patient before calling anything a failure. Then continue with step 4.
+   For step 5, after the install, remove the ISO with the VM's CD/DVD
+   button ("Eject") before rebooting.
+4. Note in the report that the test ran emulated on Apple Silicon, so
+   slowness is expected and not a Xenon problem.
 
 ## Step 4: Live session (guide Ryan)
 

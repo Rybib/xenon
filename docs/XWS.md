@@ -73,6 +73,14 @@ xws reset --yes           delete the Windows environment
 - **NTSYNC**: `/usr/lib/modules-load.d/xenon-ntsync.conf` loads the module
   and a udev rule gives the logged-in user access to `/dev/ntsync`. Wine 11
   uses it automatically.
+- **One title bar per window**: many Windows programs draw their own title
+  bar (Chromium/Electron apps, Steam, Discord, Spotify) but ask for a
+  resizable frame; GNOME then adds a full title bar on top (two headers)
+  and resizing jumps around. While Windows programs run, `xws frames`
+  turns those requests into "no decorations" so only the program's own
+  title bar shows and it moves/resizes itself, as on Windows. Normal
+  windows keep GNOME's title bar. Tested by `tests/frames.sh` with GNOME's
+  window manager and real mouse drags.
 - **Login**: a systemd user service re-syncs app entries.
 - **Wine Mono and Gecko**: `fetch-wine-addons` reads the exact versions the
   installed Wine expects from `appwiz.cpl` and installs them at image build

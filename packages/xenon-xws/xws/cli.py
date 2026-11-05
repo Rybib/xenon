@@ -222,6 +222,11 @@ def cmd_config(a) -> int:
     return 0
 
 
+def cmd_frames(a) -> int:
+    from . import frames
+    return frames.run(idle_exit=a.idle_exit)
+
+
 def cmd_kill(a) -> int:
     for p in Prefix.all():
         p.kill()
@@ -308,6 +313,11 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("key", nargs="?", choices=list(config.Settings.__dataclass_fields__))
     s.add_argument("value", nargs="?")
     s.set_defaults(func=cmd_config)
+
+    s = sub.add_parser("frames", help="keep one title bar per window on GNOME (helper)")
+    s.add_argument("--idle-exit", type=float, default=60.0,
+                   help="exit after this many seconds without Windows programs")
+    s.set_defaults(func=cmd_frames)
 
     s = sub.add_parser("kill", help="stop all running Windows programs")
     s.set_defaults(func=cmd_kill)

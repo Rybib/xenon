@@ -15,11 +15,14 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends wine wine64 wine32:i386 \
-            mingw-w64 xvfb xauth python3-pytest desktop-file-utils make
+            mingw-w64 xvfb xauth python3-pytest desktop-file-utils make \
+            mutter xdotool x11-utils python3-xlib dbus-x11
       - name: Unit tests
         run: python3 -m pytest -q packages/xenon-xws/tests packages/xenon-settings/tests
       - name: End-to-end (install, app grid, launch, uninstall)
         run: packages/xenon-xws/tests/e2e.sh "$RUNNER_TEMP/e2e"
+      - name: Window frames on GNOME (one title bar, move, resize)
+        run: /usr/bin/python3 -c "import Xlib" && packages/xenon-xws/tests/frames.sh "$RUNNER_TEMP/frames"
 
   lint:
     name: Lint
@@ -30,7 +33,8 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y shellcheck desktop-file-utils
           shellcheck build-iso.sh tools/*.sh kernel/build-kernel.sh \
-            packages/xenon-xws/tests/e2e.sh packages/xenon-system/vm-selftest \
+            packages/xenon-xws/tests/e2e.sh packages/xenon-xws/tests/frames.sh \
+            packages/xenon-system/vm-selftest packages/xenon-system/vm-gui-selftest \
             packages/xenon-xws/data/xws-binfmt packages/xenon-installer/scripts/* \
             live/auto/*
           (cd packages/xenon-xws-thirdparty && shellcheck -x fetch.sh)

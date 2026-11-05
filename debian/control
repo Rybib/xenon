@@ -27,7 +27,8 @@ Depends: ${misc:Depends},
          cabextract,
          unzip,
          p7zip-full,
-         curl
+         curl,
+         python3-xlib
 Recommends: xenon-xws-thirdparty,
             gamemode,
             mangohud,

@@ -17,10 +17,12 @@ test:
 
 e2e:
 	packages/xenon-xws/tests/e2e.sh
+	packages/xenon-xws/tests/frames.sh
 
 lint:
 	shellcheck build-iso.sh tools/*.sh kernel/build-kernel.sh \
-	  packages/xenon-xws/tests/e2e.sh packages/xenon-system/vm-selftest \
+	  packages/xenon-xws/tests/e2e.sh packages/xenon-xws/tests/frames.sh \
+	  packages/xenon-system/vm-selftest packages/xenon-system/vm-gui-selftest \
 	  packages/xenon-xws/data/xws-binfmt packages/xenon-installer/scripts/* live/auto/*
 	cd packages/xenon-xws-thirdparty && shellcheck -x fetch.sh
 	shellcheck -s sh live/config/hooks/normal/*.hook.chroot

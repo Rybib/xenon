@@ -73,3 +73,14 @@ Doing it inside Calamares makes the install fragile. The installer records
 the choice, and a first-boot service installs the driver when online and
 handles Secure Boot key enrollment (MOK) with a one-time code shown to
 the user.
+
+### GNOME draws title bars; a helper fixes apps with their own title bar
+Two options were compared on the real Xenon desktop with VLC and Notepad
+(screenshots from the ISO boot test): GNOME drawing the title bar matches
+the rest of the desktop, while Wine drawing it looks like Windows 98. The
+catch is programs with custom title bars: Wine asks for "border + resize"
+without a title, which Mutter can only express as a full title bar, so
+these apps showed two headers and resized erratically. `xws frames`
+corrects exactly those windows to "undecorated" (tested: "border only" is
+not enough in Mutter 46). Users can still pick Windows-style title bars
+in Settings.

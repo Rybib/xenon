@@ -249,3 +249,24 @@ def test_low_disk_space_is_reported_clearly(tmp_path, monkeypatch):
     p = prefix_mod.Prefix(tmp_path / "pfx", "main")
     with pytest.raises(prefix_mod.PrefixError, match="Not enough free space.*200 MB is free"):
         p.create(tmp_path / "log.txt")
+
+
+@pytest.mark.parametrize("hints,expected", [
+    ([0x3, 0x3e, 0x6, 0, 0], [0x3, 0x3e, 0x0, 0, 0]),   # border+resize, no title
+    ([0x3, 0x3e, 0x2, 0, 0], [0x3, 0x3e, 0x0, 0, 0]),   # border only: Mutter adds a title
+    ([0x3, 0x3e, 0x7a, 0, 0], None),                    # normal caption: GNOME draws it
+    ([0x3, 0x3e, 0x0, 0, 0], None),                     # already undecorated
+    ([0x1, 0x3e, 0x6, 0, 0], None),                     # decorations not specified
+    ([0x3, 0x3e, 0x1, 0, 0], None),                     # MWM_DECOR_ALL
+])
+def test_frame_hint_correction(hints, expected):
+    from xws import frames
+    assert frames.corrected_hints(hints) == expected
+
+
+def test_frame_helper_targets_only_windows_programs():
+    from xws import frames
+    assert frames.is_windows_program(("vlc.exe", "vlc.exe"))
+    assert frames.is_windows_program(("Steam.EXE", "steam.exe"))
+    assert not frames.is_windows_program(("org.gnome.Nautilus", "Nautilus"))
+    assert not frames.is_windows_program(None)

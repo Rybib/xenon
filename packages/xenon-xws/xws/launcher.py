@@ -235,6 +235,9 @@ def execute(plan: LaunchPlan, settings: config.Settings, wait: bool = True) -> i
         snapshots.create(prefix, reason=f"before {plan.target.name if plan.target else 'install'}",
                          keep=settings.snapshot_keep)
 
+    if settings.graphics_driver != "wayland" and settings.window_frame == "desktop":
+        _start_frame_helper()
+
     name = plan.target.name if plan.target else "program"
     log_path = config.LOG_DIR / f"{_safe(name)}.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -286,6 +289,20 @@ def _spawn_background_sync(prefix: Prefix) -> None:
     try:
         subprocess.Popen([sys.executable, "-m", "xws", "sync-menu", "--wait",
                           "--prefix", str(prefix.path)],
+                         env={**os.environ, "PYTHONPATH": str(Path(__file__).parent.parent)},
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                         start_new_session=True)
+    except OSError:
+        pass
+
+
+def _start_frame_helper() -> None:
+    """Start the one-title-bar helper (frames.py); it exits by itself when
+    no Windows programs are open, and only one runs per display."""
+    if not os.environ.get("DISPLAY"):
+        return
+    try:
+        subprocess.Popen([sys.executable, "-m", "xws", "frames"],
                          env={**os.environ, "PYTHONPATH": str(Path(__file__).parent.parent)},
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                          start_new_session=True)
